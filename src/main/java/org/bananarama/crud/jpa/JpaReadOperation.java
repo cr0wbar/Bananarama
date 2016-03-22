@@ -1,0 +1,96 @@
+/* 
+ * Copyright 2016 BananaRama.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package org.bananarama.crud.jpa;
+
+import com.googlecode.cqengine.query.Query;
+import com.googlecode.cqengine.query.option.QueryOptions;
+import org.bananarama.crud.ReadOperation;
+import org.bananarama.crud.util.cqlogic.CQE2SQL;
+import java.util.List;
+import java.util.stream.Stream;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+
+/**
+ * 
+ * @author Guglielmo De Concini
+ */
+public class JpaReadOperation<T> extends AbstractJpaOperation<T> implements ReadOperation<T>{
+
+    private static final String FROM = " FROM ";
+        
+    public JpaReadOperation(EntityManager em,Class<T> clazz) {
+        super(em,clazz);
+    }
+
+    @Override
+    public Stream<T> all() {
+        //Simple Select all operation
+        CriteriaQuery<T> cq = em.getCriteriaBuilder()
+                .createQuery(clazz);
+        Root<T> rootEntry = cq.from(clazz);
+        CriteriaQuery<T> all = cq.select(rootEntry);
+        
+        return em.createQuery(all).getResultList().stream();
+    }
+
+    @Override
+    public Stream<T> all(QueryOptions options) {
+       return all();
+    }
+
+    @Override
+    public <Q> Stream<T> where(Q obj) {
+        return where(obj, null);
+    }
+
+    @Override
+    public <Q> Stream<T> where(Q obj, QueryOptions options) {
+        String clause;
+        
+        if(obj instanceof Query){
+            Query query = (Query)obj;
+            clause = CQE2SQL.convertCqQuery(query, options);
+        }
+        else if(obj instanceof String){
+            clause = (String) obj;
+        }
+        else 
+            throw new IllegalArgumentException("Can't use " + obj.getClass().getName() + " in " + getClass().getName());
+        
+        //For now we will use this simple approach, which transforms the query to a string,
+        //JPA will then reparse the string in order to transform it in matching criteria
+        TypedQuery<T> tq = em.createQuery(FROM + clazz.getSimpleName() + clause,clazz);
+        
+        return tq.getResultList().stream();
+    }
+
+    @Override
+    public Stream<T> fromKeys(List<?> keys) {
+        return keys.stream()
+                .map(key -> em.find(clazz, key));        
+    }
+
+    @Override
+    public Stream<T> fromKeys(List<?> keys, QueryOptions options) {
+        return keys.stream()
+                .map(key -> em.find(clazz, key));   
+    }
+   
+    
+}

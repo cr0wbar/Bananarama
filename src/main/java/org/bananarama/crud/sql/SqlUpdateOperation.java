@@ -58,11 +58,11 @@ public class SqlUpdateOperation<T> extends AbstractSqlOperation<T> implements Up
         return this;
     }
 
-    private static String getUpdateQuery(
-            Collection<? extends FieldAccessor> accessors,
+    private static <A extends FieldAccessor> String getUpdateQuery(
+            Collection<A> accessors,
             String table,
             Class<?> clazz){
-        final Map<Boolean,List<FieldAccessor>> accessorsByIsKey = accessors.stream()
+        final Map<Boolean,List<A>> accessorsByIsKey = accessors.stream()
                 .collect(Collectors.groupingBy(FieldAccessor::isKey));
         
         if(accessorsByIsKey.get(true).isEmpty())

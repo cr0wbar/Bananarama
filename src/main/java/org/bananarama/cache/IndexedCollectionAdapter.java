@@ -41,11 +41,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Predicate;
 import java.util.stream.StreamSupport;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.config.Configuration;
+import net.sf.ehcache.config.ConfigurationFactory;
+import net.sf.ehcache.config.PersistenceConfiguration;
 import org.apache.log4j.Logger;
 
 /**
@@ -54,13 +58,27 @@ import org.apache.log4j.Logger;
  */
 public final class IndexedCollectionAdapter implements Adapter<Object> {
     
-    private final Map<Class<?>,IndexedCollection<?>> cache = new ConcurrentHashMap<>();
+    private static final String CACHE_NAME = "bananarama:indexed:buffers";
+    private final CacheManager cacheManager;
+    private final Ehcache cache;
     private final static Logger log = Logger.getLogger(IndexedCollectionAdapter.class);
     private final StripedLock slock = new StripedLock(64);
     private static final int ATTRIBUTE_MODIFIERS =  Modifier.PUBLIC
             | Modifier.FINAL
             | Modifier.STATIC;
     
+    public IndexedCollectionAdapter(){
+        //This must be configurable in the future
+        final Configuration conf = ConfigurationFactory
+                .parseConfiguration();
+        
+        conf.getDefaultCacheConfiguration()
+                .getPersistenceConfiguration()
+                .strategy(PersistenceConfiguration.Strategy.NONE);
+        
+        cacheManager =  CacheManager.newInstance(conf);
+        cache = cacheManager.addCacheIfAbsent(CACHE_NAME);
+    }
     
     @SuppressWarnings("unchecked")
     private   <T> Adapter<? super T> getBackingAdapter(Class<T> clazz){
@@ -70,7 +88,7 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
         
         if( (  backingAdapter= BananaRama.using(clazz.getAnnotation(Banana.class).adapter())) == null)
             throw new NullPointerException("The backing adapter for class " + clazz.getName() + " cannot be found. This should never happen");
-        
+
         return (Adapter<? super T>)backingAdapter;
     }
     
@@ -78,16 +96,15 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
     private <T> IndexedCollection<T> getCollection(Class<T> clazz){
         Lock lock = slock.getLock(clazz);
         lock.lock();
-        IndexedCollection<T> coll = (IndexedCollection <T>)cache.get(clazz);
-        
+        Element value = cache.get(clazz);
         try{
             
-            if(coll == null){
+            if(value == null){
                 final BufferedOnIndexedCollection typeAnno = clazz.getAnnotation(BufferedOnIndexedCollection.class);
                 log.info("Starting buffering of " + clazz.getName());
                 final IndexedCollection<T> tmpColl;
                 
-                //Retrieve collection provider fromKeys annotation
+                //Retrieve collection provider from annotation
                 try{
                     tmpColl = typeAnno.provider().newInstance().buildCollection();
                 }
@@ -96,7 +113,7 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                 }
                 
                 /*
-                Load elements fromKeys the backingAdapter
+                Load elements from the backingAdapter
                 the operation is blocking, since the
                 method which instantiates the Adapter
                 does so
@@ -138,16 +155,28 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                     }
                 }
                 
-                log.info("Cache initialization for " + clazz.getName() + " completed ");
+                final int timeToLive = Integer.valueOf(typeAnno.timeToLive());
+                final int timeToIdle = Integer.valueOf(typeAnno.timeToIdle());
                 
-                this.cache.put(clazz, coll = tmpColl);
+                //Either non-zero values are provided for 
+                //TTL and TTI through the annotation 
+                //or the element is eternal
+                if(timeToLive >= 0 && timeToIdle >= 0)
+                    value = new Element(clazz,tmpColl, timeToIdle, timeToLive);
+                else
+                    value = new Element(clazz, tmpColl, true);
+                
+                this.cache.put(value);
+                
+                log.info("Cache initialization for " + clazz.getName() + " completed ");
+
             }
         }
         finally{
             lock.unlock();
         }
         
-        return coll;
+        return (IndexedCollection < T >)value.getObjectValue();
     }
     
     
@@ -155,8 +184,14 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
      * Clear the cache
      */
     public void clear() {
-        cache.values()
+        //Clear single elements
+        cache.getAll(cache.getKeys())
+                .values()
+                .stream()
+                .map(elem -> (IndexedCollection<?>)elem.getObjectValue())
                 .forEach(IndexedCollection::clear);
+        //Dispose the cache
+        cache.dispose();
     }
     
     @Override

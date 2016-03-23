@@ -15,6 +15,7 @@
  */
 package org.bananarama.cache.annotation;
 
+import com.googlecode.cqengine.IndexedCollection;
 import org.bananarama.cache.providers.collection.ConcurrentIndexedCollectionProvider;
 import org.bananarama.cache.providers.collection.IndexedCollectionProvider;
 import java.lang.annotation.ElementType;
@@ -30,14 +31,23 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface BufferedOnIndexedCollection {
     /**
-     * 
-     * @return 
+     * The amount of time for the buffer to idle, in seconds. 0 indicates unlimited.
+     * Additionally a negative value which will result in the
+     * underlying buffer to be flagged as 'eternal'
      */
-    String expirationTimeInMillis () default "-1";
+    String timeToIdle() default "0";
+
+    /**
+     * The amount of time for the buffer to live, in seconds. 0 indicates unlimited.
+     * Additionally a negative value which will result in the
+     * underlying buffer to be flagged as 'eternal'
+     */
+    String timeToLive() default "0";
     
     /**
-     * 
-     * @return 
+     * Sets the class that will provide the implementation of the
+     * {@link IndexedCollection} that will be associated with
+     * the annotated entity
      */
     Class<? extends IndexedCollectionProvider> provider() default ConcurrentIndexedCollectionProvider.class;
     
@@ -45,7 +55,6 @@ public @interface BufferedOnIndexedCollection {
      * If true it will scan all super classes for attributes, otherwise 
      * it will focus only on the given class instead.
      * Fields in child classes override the ones in parent classes.
-     * @return 
      */
-    boolean inheritFields() default false;
+    boolean inheritFields() default false;    
 }

@@ -27,5 +27,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Table {
+    /**
+     * Specifies the name of the table for 
+     * this entity. If none is provided the name
+     * of the class will be used.
+     */
     String name();
+    
+    /**
+     * Specifies if fields inherited from super classes
+     * should be taken into consideration when reading 
+     * from the persistence layer.
+     *  
+     */
+    boolean inheritFields() default false;
 }
+

@@ -33,22 +33,14 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import sql.inheritance.Child;
 
 /**
  *
  * @author Guglielmo De Concini
  */
-public class BasicPojoTest {
+public class SqlTest {
     private static H2Adapter adap;
-    
-    @Before
-    public void openInstance() {
-
-    }
-    
-    @After
-    public void closeInstance() {
-    }
     
     @BeforeClass
     public static void prepare(){
@@ -70,6 +62,38 @@ public class BasicPojoTest {
     @Test
     public void testPojoMultiIdCrud(){
         testBatchMultiId(100);     
+    }
+    
+    @Test
+    public void testInheritance(){
+        //Create table;;
+        
+        String sql = "CREATE TABLE child (" +
+                "id integer not null, " +
+                "name char(64)," +
+                "time bigint);";
+        
+        adap.doUpdate(sql);
+        
+        final int n = 5;
+        List<Child> children = IntStream
+                .range(0, n)
+                .mapToObj(Child::newInstance)
+                .collect(Collectors.toList());
+        
+        BananaRama.create(Child.class)
+                .from(children.stream());
+        
+        List<Child> read = BananaRama.read(Child.class)
+                .all()
+                .sorted((c1,c2) -> c1.getId() - c2.getId())
+                .collect(Collectors.toList());
+        
+        for(int i=0;i<5;i++)
+            Assert.assertEquals(children.get(i),read.get(i));
+        
+        adap.doUpdate("DROP TABLE child;");
+        
     }
     
     private void testBatch(int n){

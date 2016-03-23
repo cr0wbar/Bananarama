@@ -90,7 +90,9 @@ public abstract class FieldAccessor {
         return field.getName().substring(0,1).toUpperCase() + field.getName().substring(1);
     }
     
-    public static <T> Map<String,Field> getAttributeFieldsRecursive(final Class<T> clazz,final Predicate<Field> filter){
+    public static <T> Map<String,Field> getAttributeFieldsRecursive(
+            final Class<T> clazz,
+            final Predicate<Field> filter){
         
         if( clazz == null )
             return new HashMap<>();

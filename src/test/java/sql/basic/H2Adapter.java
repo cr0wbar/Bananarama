@@ -21,33 +21,24 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import javax.sql.DataSource;
-import org.h2.jdbcx.JdbcDataSource;
 
 /**
  *
  * @author Guglielmo De Concini
  */
 public class H2Adapter extends SqlAdapter implements Closeable{
-    public static final DataSource ds = prepareDs();
     public final Connection connection;
     
     public H2Adapter() {
-        super(ds);
+        super(DataSourceProvider.prepareDs());
         try {
             //Must keep alive at least one connection otherwise in-memory H2DB resets
-            connection = ds.getConnection();
+            connection = dataSource.getConnection();
         } catch (SQLException ex) {
             throw new IllegalStateException(ex);
         }
     }
-    
-    private static DataSource prepareDs(){
-        JdbcDataSource ds = new JdbcDataSource();
-        ds.setURL("jdbc:h2:mem:db" );
-        return ds;
-    }
-  
+      
     public void doUpdate(String sql){
         try(PreparedStatement ps = connection.prepareStatement(sql)){
             ps.execute();
@@ -59,10 +50,6 @@ public class H2Adapter extends SqlAdapter implements Closeable{
 
     @Override
     public void close() throws IOException {
-        try {
-            connection.close();
-        } catch (SQLException ex) {
-            throw new IllegalStateException(ex);
-        }
+        
     }
 }

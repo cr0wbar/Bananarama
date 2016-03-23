@@ -34,6 +34,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -182,13 +183,20 @@ public abstract class AbstractSqlOperation <T>{
     }
     
     private static final int ILLEGAL_FIELD_MODIFIERS = Modifier.STATIC | Modifier.FINAL;
-    
+        
     protected <T extends FieldAccessor> List<T> getAccessors(Function<Field,T> generator){
         final Predicate<Field> fieldFilter = field ->(field.getModifiers() & ILLEGAL_FIELD_MODIFIERS) == 0
                         && !field.isAnnotationPresent(Transient.class);
+
+        final Collection<Field> fields;
+        final Table anno = clazz.getAnnotation(Table.class);
         
-        final List<T> accessors =  FieldAccessor.getAttributeFieldsForClass(clazz,fieldFilter)
-                .values()
+        if(anno != null && anno.inheritFields())
+            fields = FieldAccessor.getAttributeFieldsRecursive(clazz, fieldFilter).values();
+        else 
+            fields = FieldAccessor.getAttributeFieldsForClass(clazz, fieldFilter).values();
+        
+        final List<T> accessors = fields
                 .stream()
                 .map(generator)
                 .collect(Collectors.toList());
@@ -197,8 +205,7 @@ public abstract class AbstractSqlOperation <T>{
         return accessors;
     }
     
-    
-    private static String extractTableName(Class<?> cl){
+    private static String extractTableName(final Class<?> cl){
         final Table table;
         if((table = cl.getAnnotation(Table.class)) != null
                 && !table.name().isEmpty())

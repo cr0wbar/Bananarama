@@ -22,11 +22,16 @@ import com.googlecode.cqengine.index.disk.DiskIndex;
 
 /**
  *
-
  * @author Guglielmo De Concini
  */
 public class DiskIndexProvider<O> implements IndexProvider<O>{
 
+    /**
+     * 
+     * @param attr the attribute against which the
+     * index will be built
+     * @return an instance of {@link DiskIndex}
+     */
     @SuppressWarnings("unchecked")
     @Override
     public Index<O> getIndex(Attribute<O, ?> attr) {

@@ -16,11 +16,36 @@
 package org.bananarama.cache.providers.collection;
 
 import com.googlecode.cqengine.IndexedCollection;
+import org.bananarama.cache.annotation.BufferedOnIndexedCollection;
 
 /**
- * 
+ * Helper Class used in {@link BufferedOnIndexedCollection} to set 
+ * custom properties for the buffer.
  * @author Guglielmo De Concini
  */
 public interface IndexedCollectionProvider<O> {
-     IndexedCollection<O> buildCollection();
+    /**
+     * @return the amount of time for the buffer to idle, in seconds. 0 indicates unlimited.
+     * Additionally a negative value which will result in the
+     * underlying buffer to be flagged as 'eternal'
+     */
+    default int timeToIdle() {
+        return 0;
+    }
+
+    /**
+     * @return the amount of time for the buffer to live, in seconds. 0 indicates unlimited.
+     * Additionally a negative value which will result in the
+     * underlying buffer to be flagged as 'eternal'
+     */
+    default int timeToLive() {
+        return 0;
+    }
+    
+    /**
+     * Provides the buffer adapter with the custom implementation of 
+     * the {@link IndexedCollection}
+     * @return A instance of {@link IndexedCollection}
+     */
+    IndexedCollection<O> buildCollection();
 }

@@ -15,24 +15,22 @@
  */
 package org.bananarama.cache.providers.index;
 
-
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.index.Index;
 import com.googlecode.cqengine.index.navigable.NavigableIndex;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
  *
-
  * @author Guglielmo De Concini
  */
 public class NavigableIndexProvider<O> implements IndexProvider<O>{
 
+    /**
+     *
+     * @param attr the attribute against which the
+     * index will be built
+     * @return an instance of {@link NavigableIndex}
+     */
     @Override @SuppressWarnings("unchecked")
     public Index<O> getIndex(Attribute<O,?> attribute) {
         if(Comparable.class.isAssignableFrom(attribute.getAttributeType()))

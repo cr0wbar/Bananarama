@@ -24,25 +24,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
+ * If present, indicates that the annotated
+ * class will be buffered on a {@link IndexedCollection}
  * @author Guglielmo De Concini
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface BufferedOnIndexedCollection {
-    /**
-     * The amount of time for the buffer to idle, in seconds. 0 indicates unlimited.
-     * Additionally a negative value which will result in the
-     * underlying buffer to be flagged as 'eternal'
-     */
-    String timeToIdle() default "0";
-
-    /**
-     * The amount of time for the buffer to live, in seconds. 0 indicates unlimited.
-     * Additionally a negative value which will result in the
-     * underlying buffer to be flagged as 'eternal'
-     */
-    String timeToLive() default "0";
     
     /**
      * Sets the class that will provide the implementation of the

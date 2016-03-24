@@ -15,16 +15,25 @@
  */
 package org.bananarama.annotation;
 
+import java.lang.annotation.ElementType;
 import org.bananarama.crud.Adapter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import org.bananarama.BananaRama;
 
 /**
- * 
+ * Identifies types that can be managed by {@link BananaRama}
  * @author Guglielmo De Concini
  */
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
 public @interface Banana {
+    /**
+     * 
+     * @return The adapter that will be used
+     * to manage instances of the annotated type
+     */
     @SuppressWarnings("rawtypes")
     Class<? extends Adapter> adapter();
     

@@ -51,6 +51,7 @@ import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.ConfigurationFactory;
 import net.sf.ehcache.config.PersistenceConfiguration;
 import org.apache.log4j.Logger;
+import org.bananarama.cache.providers.collection.IndexedCollectionProvider;
 
 /**
  * 
@@ -103,9 +104,10 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                 final BufferedOnIndexedCollection typeAnno = clazz.getAnnotation(BufferedOnIndexedCollection.class);
                 log.info("Starting buffering of " + clazz.getName());
                 final IndexedCollection<T> tmpColl;
-                
+                final IndexedCollectionProvider<?> collectionProvider;
                 //Retrieve collection provider from annotation
                 try{
+                    collectionProvider = typeAnno.provider().newInstance();
                     tmpColl = typeAnno.provider().newInstance().buildCollection();
                 }
                 catch(IllegalAccessException | InstantiationException ex){
@@ -155,8 +157,8 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                     }
                 }
                 
-                final int timeToLive = Integer.valueOf(typeAnno.timeToLive());
-                final int timeToIdle = Integer.valueOf(typeAnno.timeToIdle());
+                final int timeToLive = collectionProvider.timeToLive();
+                final int timeToIdle = collectionProvider.timeToIdle();
                 
                 //Either non-zero values are provided for 
                 //TTL and TTI through the annotation 
@@ -396,7 +398,7 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                     Stream<T> buf = StreamSupport
                             .stream(coll.retrieve(query).spliterator(),false);
                     
-                    //Fallback on 'fromKeys' method
+                    //Fallback on 'from' method
                     from((Stream<T>) buf, options);
                     
                     return this;

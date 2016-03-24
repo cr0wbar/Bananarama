@@ -70,7 +70,7 @@ public class ExpirationTest {
         
         //Wait for more than the TTL time
         BufferedOnIndexedCollection anno = TimedEntry.class.getAnnotation(BufferedOnIndexedCollection.class);
-        long wait = Long.valueOf(anno.timeToLive());
+        long wait = Long.valueOf(ExpiringCollectionProvider.time);
         
         Assert.assertTrue(wait > 0);
         

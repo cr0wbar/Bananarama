@@ -20,13 +20,22 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.bananarama.BananaRama;
 
 /**
- * 
+ * Utility class to configure additional 
+ * parameters
  * @author Guglielmo De Concini
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface BananaRamaAdapter {
+    /**
+     * Indicates adapters on which the annotated adapter depends.
+     * {@link BananaRama} will automatically load the instances of 
+     * those adapters.
+     * @return the sequence of adapter types whose instances will
+     * be passed to the annotated adapter.
+     */
     Class<? extends Adapter<?>>[] requires();
 }

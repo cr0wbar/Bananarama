@@ -24,6 +24,10 @@ import com.googlecode.cqengine.ObjectLockingIndexedCollection;
  */
 public class ObjectLockingIndexedCollectionProvider<O> implements IndexedCollectionProvider<O>{
 
+    /**
+     * 
+     * @return an instance of {@link ObjectLockingIndexedCollection}
+     */
     @Override
     public IndexedCollection<O> buildCollection() {
        return new ObjectLockingIndexedCollection<>();

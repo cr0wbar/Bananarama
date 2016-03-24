@@ -17,12 +17,19 @@ package org.bananarama.cache.providers.index;
 
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.index.Index;
+import org.bananarama.cache.annotation.Indexed;
 
 /**
- *
-
+ * ChildClass can be used by the {@link Indexed} annotation
+ * in order to provide custom instances of {@link Index}
  * @author Guglielmo De Concini
  */
 public interface IndexProvider<O> {
+    /**
+     *
+     * @param attr the attribute against which the
+     * index will be built
+     * @return an implementation of {@link Index}
+     */
     public Index<O> getIndex(Attribute<O,?> attr);
 }

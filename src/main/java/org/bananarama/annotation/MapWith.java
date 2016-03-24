@@ -21,10 +21,16 @@ import java.lang.annotation.RetentionPolicy;
 import org.bananarama.crud.magic.ObjToDto;
 
 /**
- * 
+ * Used in Object<->DTO transfer operations
  * @author Guglielmo De Concini
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MapWith {
+    
+    /**
+     * 
+     * @return the type that extends {@link ObjToDto} whose instance
+     * will be used to map DTO to Objects and vice versa.
+     */
     Class<? extends ObjToDto> value();
 }

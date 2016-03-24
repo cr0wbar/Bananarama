@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright 2016 BananaRama.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,23 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.bananarama.cache.providers.collection;
-
-import com.googlecode.cqengine.ConcurrentIndexedCollection;
-import com.googlecode.cqengine.IndexedCollection;
+package cache.expiration;
+import org.bananarama.cache.providers.collection.ConcurrentIndexedCollectionProvider;
 
 /**
+ *
  * @author Guglielmo De Concini
  */
-public class ConcurrentIndexedCollectionProvider<O> implements IndexedCollectionProvider<O>{
+public class ExpiringCollectionProvider<O> extends ConcurrentIndexedCollectionProvider<O>{
 
-    /**
-     * 
-     * @return an instance of {@link ConcurrentIndexedCollection}
-     */
-    @Override
-    public IndexedCollection<O> buildCollection() {
-        return new ConcurrentIndexedCollection<>();
-    }
+    protected final static int time = 1;
     
+    @Override
+    public int timeToLive(){
+        return time;
+    }
 }

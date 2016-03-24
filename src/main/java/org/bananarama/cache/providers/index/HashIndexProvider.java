@@ -21,11 +21,16 @@ import com.googlecode.cqengine.index.hash.HashIndex;
 
 /**
  *
-
  * @author Guglielmo De Concini
  */
 public class HashIndexProvider<O> implements IndexProvider<O>{
 
+    /**
+     *
+     * @param attr the attribute against which the
+     * index will be built
+     * @return an instance of {@link HashIndex}
+     */
     @Override
     public  Index<O> getIndex(Attribute<O,?> attribute) {
         return HashIndex.onAttribute(attribute);

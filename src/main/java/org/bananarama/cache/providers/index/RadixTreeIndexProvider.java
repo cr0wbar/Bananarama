@@ -21,11 +21,16 @@ import com.googlecode.cqengine.index.radix.RadixTreeIndex;
 
 /**
  *
-
  * @author Guglielmo De Concini
  */
 public class RadixTreeIndexProvider<O> implements IndexProvider<O>{
 
+        /**
+     * 
+     * @param attr the attribute against which the
+     * index will be built
+     * @return an instance of {@link RadixTreeIndex}
+     */
     @SuppressWarnings("unchecked")
     public Index<O> getIndex(Attribute<O,?> attribute) {
         if(CharSequence.class.isAssignableFrom(attribute.getAttributeType()))

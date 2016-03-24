@@ -15,6 +15,7 @@
  */
 package org.bananarama.cache.annotation;
 
+import com.googlecode.cqengine.index.Index;
 import org.bananarama.cache.providers.index.HashIndexProvider;
 import org.bananarama.cache.providers.index.IndexProvider;
 import java.lang.annotation.ElementType;
@@ -31,5 +32,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Indexed {
+    /**
+     * The type whose instance will be used
+     * in order to load the {@link Index} for the annotated field.
+     * @return 
+     */
     Class<? extends IndexProvider> value() default HashIndexProvider.class;
 }

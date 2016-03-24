@@ -23,7 +23,7 @@ import org.bananarama.crud.util.NoOpAdapter;
  *
  * @author Guglielmo De Concini
  */
-@BufferedOnIndexedCollection(timeToLive = "1")
+@BufferedOnIndexedCollection(provider = ExpiringCollectionProvider.class)
 @Banana(adapter = NoOpAdapter.class)
 public class TimedEntry {
     private final int  id;

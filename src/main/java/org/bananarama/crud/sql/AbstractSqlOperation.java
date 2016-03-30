@@ -61,7 +61,7 @@ public abstract class AbstractSqlOperation <T>{
     
     private final Map<Class<?>,Class<? extends SqlTypeConverter<?>>> converters;
     private static final SqlTypeConverter<Object> NOOP_TYPE_CONVERTER = new TransparentTypeConverter();
-    //private final MethodHandles.Lookup lookup;
+
     protected AbstractSqlOperation(DataSource dataSource, Class<T> clazz){
         this.clazz = clazz;
         this.dataSource = dataSource;
@@ -145,9 +145,11 @@ public abstract class AbstractSqlOperation <T>{
             }
         }
         catch(Exception ex){
+            Exception sub = ex;
             if(ex instanceof SQLException)
-                log.error("SQLException was thrown ", ((SQLException)ex).getNextException());
-            throw new FailedOperationException("Reading data from database failed (" +clazz.getName()+")",ex);
+                sub = ((SQLException)ex).getNextException();
+            
+            throw new FailedOperationException("Reading data from database failed (" +clazz.getName()+")" + sub.getMessage(),sub);
         }
     }
     
@@ -174,9 +176,11 @@ public abstract class AbstractSqlOperation <T>{
             conn.commit();
         }
         catch(Exception ex){
+            Exception sub = ex;
             if(ex instanceof SQLException)
-                log.error("SQLException was thrown ", ((SQLException)ex).getNextException());
-            throw new FailedOperationException("Writing data on DB failed (" +clazz.getName()+")",ex);
+                sub = ((SQLException)ex).getNextException();
+            
+            throw new FailedOperationException("Writing data on DB failed (" +clazz.getName()+")" + sub.getMessage(),sub);
         }
         
         return affected;

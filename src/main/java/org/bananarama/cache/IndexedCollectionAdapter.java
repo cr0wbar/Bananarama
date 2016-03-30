@@ -103,9 +103,6 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
         try{
             
             if(value == null){
-                
-                long start = System.nanoTime();
-                
                 final BufferedOnIndexedCollection typeAnno = clazz.getAnnotation(BufferedOnIndexedCollection.class);
                 log.info("Starting buffering of " + clazz.getName());
                 final IndexedCollection<T> tmpColl;
@@ -175,7 +172,7 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                 
                 this.cache.put(value);
                 
-                log.info("Cache initialization for " + clazz.getName() + " completed in: " + StringUtils.fromNanoseconds_ToHHmmssms(System.nanoTime() - start));
+                log.info("Cache initialization for " + clazz.getName() + " completed ");
 
             }
         }
@@ -201,15 +198,6 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
         cache.dispose();
     }
     
-    /**
-     * 
-     * @return <code>true</code> if the cache for the provided
-     * {@link Class} exists
-     */
-    public boolean cacheExists(Class<?> clazz){
-        return cache != null && cache.get(clazz) != null;
-    }
-    
     @Override
     public <T> CreateOperation<T> create(Class<T> clazz) {
         return new CreateOperation<T>() {
@@ -224,11 +212,11 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
              */
             @Override
             public CreateOperation<T> from(Stream<T> data) {
-                //Add elements to current collection
                 List<T> buf = data.collect(Collectors.toList());
-                coll.addAll(buf);
-                //And to underlying layer
+                //Add elements to underlying layer
                 getBackingAdapter(clazz).create(clazz).from(buf.stream());
+                //And then to collection
+                coll.addAll(buf);
                 return this;
             }
             
@@ -241,11 +229,11 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
              */
             @Override
             public CreateOperation<T> from(Stream<T> data, QueryOptions options) {
-                //Add elements to current collection
                 List<T> buf = data.collect(Collectors.toList());
-                coll.addAll(buf);
-                //And to underlying layer
+                //Add elements to underlying layer
                 getBackingAdapter(clazz).create(clazz).from(buf.stream(),options);
+                //And then to collection
+                coll.addAll(buf);
                 return this;
             }
         };
@@ -269,7 +257,7 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
             
             /**
              * Returns all the elements directly fromKeys the underlying layer
- passing the given query options..
+             * passing the given query options..
              * @param options
              * @return
              */
@@ -387,8 +375,6 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
              * Removes all elements fromKeys internal collection
              * and underlying layer that match the given predicate.
              * 
-             * Instad of call the removeAll method, that is very time consimung,
-             * are maintained in the collection all the elements that not match the predicate.
              * @param <Q> accepted types are: {@link Query}
              * @param obj
              * @return the {@link DeleteOperation}
@@ -412,9 +398,12 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                 //Retrieve elements that match query and remove them
                 if(obj instanceof Query){
                     Query<T> query = (Query<T>)obj;
+                    getBackingAdapter(clazz).delete(clazz)
+                            .where(obj,options);
+                    
                     Collection<T> complement = StreamSupport
                             .stream(coll.retrieve(not(query)).spliterator(),false).collect(Collectors.toList());
-                    
+
                     coll.clear();
                     coll.addAll(complement);
                     
@@ -429,10 +418,6 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
             /**
              * Remove all elements in internal collection
              * and underlying layer.
-             * 
-             * This method is very time consimng because the due to the use of
-             * removeAll method on {@link IndexedCollection}.
-             * Use the {@link DeleteOperation#where(Object)} instead.
              * @param data
              * @return
              */

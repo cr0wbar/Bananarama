@@ -18,6 +18,7 @@ package org.bananarama.crud.sql.accessor;
 import java.lang.reflect.Field;
 import java.util.function.BiConsumer;
 import java.lang.reflect.Method;
+import org.bananarama.crud.sql.annotation.Column;
 
 /**
  *
@@ -29,6 +30,13 @@ public class Setter extends FieldAccessor implements BiConsumer<Object, Object>{
     
     public Setter(Field field){
         super(field);
+        
+        final Column columnAnno = field.getAnnotation(Column.class);
+        if(columnAnno != null && !columnAnno.functionWrapper().isEmpty())
+            name = String.format(columnAnno.functionWrapper(),super.getName());
+        else
+            name = super.getName();
+        
         handle = setterHandleFor(field);
     }
     

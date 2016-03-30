@@ -27,5 +27,18 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Column {
+    /**
+     * Corresponding column name on database
+     * @return the name of the db's column
+     */
     String name();
+    
+    /**
+     * If non-empty, passes the column name as argument to a native
+     * db function. This is done only when reading data from db.
+     * Use standard {@link java.lang.String#format} notation.
+     * E.g. {@code AsBinary(%s)}
+     * @return 
+     */
+    String functionWrapper() default "";
 }

@@ -15,6 +15,7 @@
  */
 package basic;
 
+import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import org.bananarama.crud.CreateOperation;
 import org.bananarama.crud.DeleteOperation;
@@ -113,6 +114,11 @@ public class ListAdapter implements Adapter<Entry>{
 
            @Override
            public <Q> DeleteOperation<T> where(Q whereClaus, QueryOptions options) {
+               if(whereClaus instanceof Query){
+                   Query<T> query = (Query<T>)whereClaus;
+                   backend.removeIf(t -> query.matches((T)t, options));
+                   return this;
+               }
                throw new UnsupportedOperationException("Not supported yet.");
            }
 

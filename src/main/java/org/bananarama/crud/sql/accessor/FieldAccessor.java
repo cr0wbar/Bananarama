@@ -33,9 +33,8 @@ import java.util.stream.Collectors;
  */
 public abstract class FieldAccessor {
     private final Class<?> returnType;
-    private final String name;
+    protected String name;
     private final boolean isKey;
-    private final String fieldName;
     private final Class<? extends SqlTypeConverter<?>> sqlTypeConverter;
     
     protected FieldAccessor(Field field){
@@ -49,8 +48,6 @@ public abstract class FieldAccessor {
         else
             name = field.getName();
         
-        fieldName = field.getName();
-        
         isKey = field.isAnnotationPresent(Id.class);    
         
         ConvertWith converterAnno = field.getAnnotation(ConvertWith.class);
@@ -58,10 +55,6 @@ public abstract class FieldAccessor {
     }
     public String getName(){
         return name;
-    }
-
-    public String getFieldName() {
-        return fieldName;
     }
     
     public Class<?> getType(){

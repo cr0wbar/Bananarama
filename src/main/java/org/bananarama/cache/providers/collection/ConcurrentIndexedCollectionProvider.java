@@ -31,5 +31,5 @@ public class ConcurrentIndexedCollectionProvider<O> implements IndexedCollection
     public IndexedCollection<O> buildCollection() {
         return new ConcurrentIndexedCollection<>();
     }
-    
+
 }

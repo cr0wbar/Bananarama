@@ -37,6 +37,8 @@ import org.bananarama.crud.ReadOperation;
 import org.bananarama.crud.UpdateOperation;
 import org.bananarama.crud.Adapter;
 import org.bananarama.crud.sql.accessor.FieldAccessor;
+import org.bananarama.util.StringUtils;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -101,6 +103,9 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
         try{
             
             if(value == null){
+                
+                long start = System.nanoTime();
+                
                 final BufferedOnIndexedCollection typeAnno = clazz.getAnnotation(BufferedOnIndexedCollection.class);
                 log.info("Starting buffering of " + clazz.getName());
                 final IndexedCollection<T> tmpColl;
@@ -170,7 +175,7 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                 
                 this.cache.put(value);
                 
-                log.info("Cache initialization for " + clazz.getName() + " completed ");
+                log.info("Cache initialization for " + clazz.getName() + " completed in: " + StringUtils.fromNanoseconds_ToHHmmssms(System.nanoTime() - start));
 
             }
         }
@@ -194,6 +199,15 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                 .forEach(IndexedCollection::clear);
         //Dispose the cache
         cache.dispose();
+    }
+    
+    /**
+     * 
+     * @return <code>true</code> if the cache for the provided
+     * {@link Class} exists
+     */
+    public boolean cacheExists(Class<?> clazz){
+        return cache != null && cache.get(clazz) != null;
     }
     
     @Override
@@ -271,10 +285,9 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
              * @param obj
              * @return a {@link Stream} of results
              */
-            @Override @SuppressWarnings("unchecked")
+            @Override @SuppressWarnings({ "unchecked", "rawtypes" })
             public <Q> Stream<T> where(Q obj) {
                 if(obj instanceof Query){
-                    @SuppressWarnings("unchecked")
                     Query<T> query = (Query<T>)obj;
                     ResultSet rs =  coll.retrieve(query);
                     List<T> buf = (List<T>) StreamSupport.stream(rs.spliterator(),false).collect(Collectors.toList());
@@ -294,7 +307,7 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
              * @param options
              * @return
              */
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({ "unchecked", "rawtypes" })
             @Override
             public <Q> Stream<T> where(Q obj, QueryOptions options) {
                 if(obj instanceof Query){
@@ -365,13 +378,17 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
     
     @Override
     public <T> DeleteOperation<T> delete(Class<T> clazz) {
+        
         return new DeleteOperation<T>() {
             
             private IndexedCollection<T> coll = getCollection(clazz);
             
             /**
              * Removes all elements fromKeys internal collection
-                and underlying layer that match the given predicate
+             * and underlying layer that match the given predicate.
+             * 
+             * Instad of call the removeAll method, that is very time consimung,
+             * are maintained in the collection all the elements that not match the predicate.
              * @param <Q> accepted types are: {@link Query}
              * @param obj
              * @return the {@link DeleteOperation}
@@ -395,21 +412,27 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                 //Retrieve elements that match query and remove them
                 if(obj instanceof Query){
                     Query<T> query = (Query<T>)obj;
-                    Stream<T> buf = StreamSupport
-                            .stream(coll.retrieve(query).spliterator(),false);
+                    Collection<T> complement = StreamSupport
+                            .stream(coll.retrieve(not(query)).spliterator(),false).collect(Collectors.toList());
                     
-                    //Fallback on 'from' method
-                    from((Stream<T>) buf, options);
+                    coll.clear();
+                    coll.addAll(complement);
                     
                     return this;
                 }
                 
-                throw new IllegalArgumentException(getClass().getName() +" does not support " + obj.getClass().getName() + " for deleting");
+                throw new IllegalArgumentException(getClass().getName() 
+                        + " does not support " + obj.getClass().getName() 
+                        + " for deleting");
             }
             
             /**
              * Remove all elements in internal collection
-             * and underlying layer
+             * and underlying layer.
+             * 
+             * This method is very time consimng because the due to the use of
+             * removeAll method on {@link IndexedCollection}.
+             * Use the {@link DeleteOperation#where(Object)} instead.
              * @param data
              * @return
              */

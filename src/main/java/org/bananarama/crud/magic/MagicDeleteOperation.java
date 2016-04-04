@@ -16,7 +16,6 @@
 package org.bananarama.crud.magic;
 
 import com.googlecode.cqengine.query.option.QueryOptions;
-import org.bananarama.BananaRama;
 import org.bananarama.crud.DeleteOperation;
 import java.util.stream.Stream;
 
@@ -26,14 +25,16 @@ import java.util.stream.Stream;
  */
 public class MagicDeleteOperation<O,D,M extends ObjToDto<O,D>> implements DeleteOperation<O>{
     private final M mapper;
+    private final DeleteOperation<D> deleteDto;
     
-    public MagicDeleteOperation(M mapper){
+    public MagicDeleteOperation(M mapper,DeleteOperation<D> deleteDto){
         this.mapper = mapper;
+        this.deleteDto = deleteDto;
     }
 
     @Override
     public <Q> DeleteOperation<O> where(Q whereClaus) {
-        BananaRama.delete(mapper.dtoType()).where(whereClaus);
+        deleteDto.where(whereClaus);
         return this;
     }
 
@@ -41,13 +42,13 @@ public class MagicDeleteOperation<O,D,M extends ObjToDto<O,D>> implements Delete
     public DeleteOperation<O> from(Stream<O> data) {
         Stream<D> dtos = data
                 .map(mapper::toDto);
-        BananaRama.delete(mapper.dtoType()).from(dtos);
+        deleteDto.from(dtos);
         return this;
     }
 
     @Override
     public <Q> DeleteOperation<O> where(Q whereClaus, QueryOptions options) {
-        BananaRama.delete(mapper.dtoType()).where(whereClaus,options);
+        deleteDto.where(whereClaus,options);
         return this;
     }
 
@@ -55,8 +56,13 @@ public class MagicDeleteOperation<O,D,M extends ObjToDto<O,D>> implements Delete
     public DeleteOperation<O> from(Stream<O> data, QueryOptions options) {
         Stream<D> dtos = data
                 .map(mapper::toDto);
-        BananaRama.delete(mapper.dtoType()).from(dtos,options);
+        deleteDto.from(dtos,options);
         return this;
+    }
+
+    @Override
+    public void close() throws Exception {
+        deleteDto.close();
     }
     
 }

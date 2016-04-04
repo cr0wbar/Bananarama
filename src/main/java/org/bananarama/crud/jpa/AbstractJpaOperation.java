@@ -31,7 +31,7 @@ public class AbstractJpaOperation<T> implements AutoCloseable{
         this.clazz = clazz;
     }
 
-    
+   
     @Override
     public void close() throws Exception {
         if(em.getTransaction().isActive()){

@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  *
  * @author Guglielmo De Concini
  */
-public interface ReadOperation<T> {
+public interface ReadOperation<T> extends AutoCloseable{
     
     /**
      * Return all the data contained in the persisted 

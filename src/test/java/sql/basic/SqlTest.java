@@ -39,11 +39,12 @@ import sql.inheritance.Child;
  */
 public class SqlTest {
     private static H2Adapter adap;
-    
+    private final static BananaRama bananarama = new BananaRama();
+
     @BeforeClass
     public static void prepare(){
         BasicConfigurator.configure();
-        adap = BananaRama.using(H2Adapter.class);
+        adap = bananarama.using(H2Adapter.class);
     }
     
     @AfterClass
@@ -79,10 +80,10 @@ public class SqlTest {
                 .mapToObj(Child::newInstance)
                 .collect(Collectors.toList());
         
-        BananaRama.create(Child.class)
+        bananarama.create(Child.class)
                 .from(children.stream());
         
-        List<Child> read = BananaRama.read(Child.class)
+        List<Child> read = bananarama.read(Child.class)
                 .all()
                 .sorted((c1,c2) -> c1.getId() - c2.getId())
                 .collect(Collectors.toList());

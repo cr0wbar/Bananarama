@@ -16,7 +16,6 @@
 package org.bananarama.crud.magic;
 
 import com.googlecode.cqengine.query.option.QueryOptions;
-import org.bananarama.BananaRama;
 import org.bananarama.crud.UpdateOperation;
 import java.util.stream.Stream;
 
@@ -27,23 +26,30 @@ import java.util.stream.Stream;
 public class MagicUpdateOperation<O,D,M extends ObjToDto<O,D>> implements UpdateOperation<O> {
 
     private final M mapper;
-
-    public MagicUpdateOperation(M mapper) {
+    private final UpdateOperation<D> updateDto;
+    
+    public MagicUpdateOperation(M mapper,UpdateOperation<D> updateDto) {
         this.mapper = mapper;
+        this.updateDto = updateDto;
     }
 
     @Override
     public UpdateOperation<O> from(Stream<O> data) {
         Stream<D> dtos = data.map(mapper::toDto);
-        BananaRama.update(mapper.dtoType()).from(dtos);
+        updateDto.from(dtos);
         return this;
     }
 
     @Override
     public UpdateOperation<O> from(Stream<O> data, QueryOptions options) {
         Stream<D> dtos = data.map(mapper::toDto);
-        BananaRama.update(mapper.dtoType()).from(dtos,options);
+        updateDto.from(dtos,options);
         return this;
+    }
+
+    @Override
+    public void close() throws Exception {
+     updateDto.close();
     }
     
 }

@@ -28,7 +28,7 @@ import java.util.stream.Stream;
  * NoOp Adapter. Useful for short-circuiting in an adapter chain
  * @author Guglielmo De Concini
  */
-public final class NoOpAdapter implements Adapter<Object>{
+public class NoOpAdapter implements Adapter<Object>{
     
     @Override
     public <T> CreateOperation<T> create(Class<T> clazz) {
@@ -41,6 +41,10 @@ public final class NoOpAdapter implements Adapter<Object>{
             @Override
             public CreateOperation<T> from(Stream<T> data, QueryOptions options) {
                 return this;
+            }
+
+            @Override
+            public void close() throws Exception {
             }
         };
     }
@@ -77,6 +81,10 @@ public final class NoOpAdapter implements Adapter<Object>{
             public Stream<T> fromKeys(List<?> keys, QueryOptions options) {
                 return Stream.empty();
             }
+
+            @Override
+            public void close() throws Exception {
+            }
             
         };
     }
@@ -93,6 +101,10 @@ public final class NoOpAdapter implements Adapter<Object>{
             @Override
             public UpdateOperation<T> from(Stream<T> data, QueryOptions options) {
                 return this;
+            }
+
+            @Override
+            public void close() throws Exception {
             }
         };
     }
@@ -118,6 +130,10 @@ public final class NoOpAdapter implements Adapter<Object>{
             @Override
             public DeleteOperation<T> from(Stream<T> data, QueryOptions options) {
                 return this;
+            }
+
+            @Override
+            public void close() throws Exception {
             }
         };
     }

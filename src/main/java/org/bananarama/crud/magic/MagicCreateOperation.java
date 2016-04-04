@@ -16,7 +16,6 @@
 package org.bananarama.crud.magic;
 
 import com.googlecode.cqengine.query.option.QueryOptions;
-import org.bananarama.BananaRama;
 import org.bananarama.crud.CreateOperation;
 import java.util.stream.Stream;
 
@@ -26,23 +25,30 @@ import java.util.stream.Stream;
  */
 public class MagicCreateOperation<O,D,M extends ObjToDto<O,D>> implements CreateOperation<O>{
     private final M mapper;
+    private final CreateOperation<D> createDto;
     
-    public MagicCreateOperation(M mapper){
+    public MagicCreateOperation(M mapper,CreateOperation<D> createDto){
         this.mapper = mapper;
+        this.createDto = createDto;
     }
     
     @Override
     public CreateOperation<O> from(Stream<O> data) {
         Stream<D> dtos = data.map(mapper::toDto);
-        BananaRama.create(mapper.dtoType()).from(dtos);
+        createDto.from(dtos);
         return this;
     }
 
     @Override
     public CreateOperation<O> from(Stream<O> data, QueryOptions options) {
         Stream<D> dtos = data.map(mapper::toDto);
-        BananaRama.create(mapper.dtoType()).from(dtos,options);
+        createDto.from(dtos,options);
         return this;
+    }
+
+    @Override
+    public void close() throws Exception {
+      createDto.close();
     }
     
 }

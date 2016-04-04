@@ -16,7 +16,6 @@
 package org.bananarama.crud.magic;
 
 import com.googlecode.cqengine.query.option.QueryOptions;
-import org.bananarama.BananaRama;
 import org.bananarama.crud.ReadOperation;
 import java.util.List;
 import java.util.stream.Stream;
@@ -27,45 +26,52 @@ import java.util.stream.Stream;
  */
 public class MagicReadOperation<O,D,M extends ObjToDto<O,D>> implements ReadOperation<O> {
     private final M mapper;
+    private final ReadOperation<D> readDto;
     
-    public MagicReadOperation(M mapper){
+    public MagicReadOperation(M mapper,ReadOperation<D> readDto){
         this.mapper = mapper;
+        this.readDto = readDto;
     }
     
     @Override
     public Stream<O> all() {
-        Stream<D> dtos = BananaRama.read(mapper.dtoType()).all();
-        return dtos.map(mapper::toObj);
+        return readDto.all()
+                .map(mapper::toObj);
     }
 
     @Override
     public Stream<O> all(QueryOptions options) {
-        Stream<D> dtos = BananaRama.read(mapper.dtoType()).all(options);
-        return dtos.map(mapper::toObj);
+      return readDto.all(options).
+              map(mapper::toObj);
     }
     
     @Override
     public <Q> Stream<O> where(Q whereClause) {
-        Stream<D> dtos = BananaRama.read(mapper.dtoType()).where(whereClause);
-        return dtos.map(mapper::toObj);
+        return readDto.where(whereClause)
+                .map(mapper::toObj);
     }
 
     @Override
     public <Q> Stream<O> where(Q whereClause, QueryOptions options) {
-        Stream<D> dtos = BananaRama.read(mapper.dtoType()).where(whereClause,options);
-        return dtos.map(mapper::toObj);
+        return readDto.where(whereClause, options)
+                .map(mapper::toObj);
     }
 
     @Override
     public Stream<O> fromKeys(List<?> keys) {
-        Stream<D> dtos = BananaRama.read(mapper.dtoType()).fromKeys(keys);
-        return dtos.map(mapper::toObj);
+        return readDto.fromKeys(keys)
+                .map(mapper::toObj);
     }
 
     @Override
     public Stream<O> fromKeys(List<?> keys,QueryOptions options) {
-        Stream<D> dtos = BananaRama.read(mapper.dtoType()).fromKeys(keys,options);
-        return dtos.map(mapper::toObj);
+        return readDto.fromKeys(keys, options)
+                .map(mapper::toObj);
+    }
+
+    @Override
+    public void close() throws Exception {
+        readDto.close();
     }
     
 }

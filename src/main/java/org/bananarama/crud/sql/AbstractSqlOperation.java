@@ -50,7 +50,7 @@ import org.apache.log4j.Logger;
  *
  * @author Guglielmo De Concini
  */
-public abstract class AbstractSqlOperation <T>{
+public abstract class AbstractSqlOperation <T> implements AutoCloseable{
     protected final Logger log = Logger.getLogger(getClass());
     protected final Class<T> clazz;
     protected final DataSource dataSource;
@@ -145,9 +145,12 @@ public abstract class AbstractSqlOperation <T>{
             }
         }
         catch(Exception ex){
-            Exception sub = ex;
+            final Exception sub;
+            
             if(ex instanceof SQLException)
-                sub = ((SQLException)ex).getNextException();
+                sub = findCause((SQLException)ex);
+            else 
+                sub = ex;
             
             throw new FailedOperationException("Reading data from database failed (" +clazz.getName()+")" + sub.getMessage(),sub);
         }
@@ -176,14 +179,23 @@ public abstract class AbstractSqlOperation <T>{
             conn.commit();
         }
         catch(Exception ex){
-            Exception sub = ex;
-            if(ex instanceof SQLException)
-                sub = ((SQLException)ex).getNextException();
+            final Exception sub;
             
-            throw new FailedOperationException("Writing data on DB failed (" +clazz.getName()+")" + sub.getMessage(),sub);
+            if(ex instanceof SQLException)
+                sub = findCause((SQLException)ex);
+            else 
+                sub = ex;
+            
+            throw new FailedOperationException("Writing data on DB failed (" +clazz.getName()+")", sub);
         }
         
         return affected;
+    }
+    
+    private static SQLException findCause(SQLException ex){
+        if(ex.getNextException() != null)
+            return findCause(ex);
+        return ex;
     }
     
     private static final int ILLEGAL_FIELD_MODIFIERS = Modifier.STATIC | Modifier.FINAL;
@@ -226,6 +238,10 @@ public abstract class AbstractSqlOperation <T>{
         
         return field.getName();
              
+    }
+
+    @Override
+    public void close() throws Exception {
     }
     
     /**

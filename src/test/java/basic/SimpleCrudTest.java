@@ -29,18 +29,19 @@ import static org.junit.Assert.*;
  */
 public class SimpleCrudTest {
     
+    private final BananaRama bananarama = new BananaRama();
     
     @Test
     public void crudTest() {
 
         Entry entry = new Entry("testKey","testVal");
         
-        ReadOperation<Entry> read = BananaRama.read(Entry.class);
+        ReadOperation<Entry> read = bananarama.read(Entry.class);
         assertNotNull(read);
         
         assertEquals(0, read.all().count());
         
-        CreateOperation<Entry> create = BananaRama.create(Entry.class);
+        CreateOperation<Entry> create = bananarama.create(Entry.class);
         assertNotNull(create);
         
         create.from(Stream.of(entry));
@@ -51,12 +52,12 @@ public class SimpleCrudTest {
         
         Entry entryUpdated = new Entry("testKey","testValUpdated");
         
-        BananaRama.update(Entry.class).from(Stream.of(entryUpdated));
+        bananarama.update(Entry.class).from(Stream.of(entryUpdated));
         assertEquals(1, read.all().count());
 
         assertEquals(entryUpdated.getValue(),read.all().findFirst().get().getValue());
         
-        DeleteOperation<Entry> delete = BananaRama.delete(Entry.class);
+        DeleteOperation<Entry> delete = bananarama.delete(Entry.class);
         assertNotNull(delete);
         
         delete.from(Stream.of(entryUpdated));

@@ -27,9 +27,7 @@ import java.util.stream.Stream;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -39,7 +37,11 @@ import static org.junit.Assert.*;
  * @author Guglielmo De Concini
  */
 public class JpaTest {
+    private final BananaRama bananarama;
     
+    public JpaTest(){
+        this.bananarama = new BananaRama();
+    }
     
     @BeforeClass
     public static void setUpClass() {
@@ -51,19 +53,11 @@ public class JpaTest {
     public static void tearDownClass() {
         BasicConfigurator.resetConfiguration();
     }
-    
-    @Before
-    public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
-    }
 
     public void checkCount(int n,ReadOperation<Simpleton> read){
         assertEquals(n,read.all().count());
-        assertEquals(n,BananaRama.read(Simpleton.class).all().count());
-        assertEquals(n,BananaRama.using(H2Adapter.class).read(Simpleton.class).all().count());
+        assertEquals(n,bananarama.read(Simpleton.class).all().count());
+        assertEquals(n,bananarama.using(H2Adapter.class).read(Simpleton.class).all().count());
     }
     
     @Test
@@ -72,10 +66,10 @@ public class JpaTest {
         simp.setId(1);
         simp.setDescription("immalive");
         
-        CreateOperation<Simpleton> create = BananaRama.create(Simpleton.class);
-        ReadOperation<Simpleton> read = BananaRama.read(Simpleton.class);
-        UpdateOperation<Simpleton> update = BananaRama.update(Simpleton.class);
-        DeleteOperation<Simpleton> delete = BananaRama.delete(Simpleton.class);
+        CreateOperation<Simpleton> create = bananarama.create(Simpleton.class);
+        ReadOperation<Simpleton> read = bananarama.read(Simpleton.class);
+        UpdateOperation<Simpleton> update = bananarama.update(Simpleton.class);
+        DeleteOperation<Simpleton> delete = bananarama.delete(Simpleton.class);
         
         assertNotNull(create);
         assertNotNull(read);
@@ -125,10 +119,10 @@ public class JpaTest {
         hammer.setDescription("A hammer");
         
         simp.getItems().add(hammer);
-        BananaRama.create(Simpleton.class)
+        bananarama.create(Simpleton.class)
                 .from(Stream.of(simp));
         
-        List<Item> items  = BananaRama.read(Item.class)
+        List<Item> items  = bananarama.read(Item.class)
                 .all()
                 .collect(Collectors.toList());
         
@@ -136,14 +130,14 @@ public class JpaTest {
         assertEquals(1, items.get(0).getUsers().size());
         assertEquals(hammer.getDescription(), items.get(0).getDescription());
 
-        simp = BananaRama.read(Simpleton.class).all().findFirst().get();
+        simp = bananarama.read(Simpleton.class).all().findFirst().get();
         assertEquals(1, simp.getItems().size());
         simp.getItems().clear();
-        BananaRama.update(Simpleton.class).from(Stream.of(simp));    
-        simp = BananaRama.read(Simpleton.class).all().findFirst().get();
+        bananarama.update(Simpleton.class).from(Stream.of(simp));    
+        simp = bananarama.read(Simpleton.class).all().findFirst().get();
         assertEquals(0, simp.getItems().size());
         
-        items  = BananaRama.read(Item.class)
+        items  = bananarama.read(Item.class)
                 .all()
                 .collect(Collectors.toList());
         
@@ -160,29 +154,29 @@ public class JpaTest {
         someone.setAge(27);
         someone.setName("Gordon");
         
-        BananaRama.create(Someone.class)
+        bananarama.create(Someone.class)
                 .from(Stream.of(someone));
         
-        List<Someone> people = BananaRama.read(Someone.class).all().collect(Collectors.toList());
+        List<Someone> people = bananarama.read(Someone.class).all().collect(Collectors.toList());
         assertEquals(1, people.size());
         
         //Filter On Age
-        assertEquals(1, BananaRama.read(Someone.class).where(equal(Someone.AGE, 27)).count());
-        assertEquals(0, BananaRama.read(Someone.class).where(greaterThan(Someone.AGE, 27)).count());
-        assertEquals(1, BananaRama.read(Someone.class).where(greaterThanOrEqualTo(Someone.AGE, 27)).count());
-        assertEquals(1, BananaRama.read(Someone.class).where(lessThanOrEqualTo(Someone.AGE, 27)).count());
-        assertEquals(0, BananaRama.read(Someone.class).where(lessThan(Someone.AGE, 27)).count());
+        assertEquals(1, bananarama.read(Someone.class).where(equal(Someone.AGE, 27)).count());
+        assertEquals(0, bananarama.read(Someone.class).where(greaterThan(Someone.AGE, 27)).count());
+        assertEquals(1, bananarama.read(Someone.class).where(greaterThanOrEqualTo(Someone.AGE, 27)).count());
+        assertEquals(1, bananarama.read(Someone.class).where(lessThanOrEqualTo(Someone.AGE, 27)).count());
+        assertEquals(0, bananarama.read(Someone.class).where(lessThan(Someone.AGE, 27)).count());
         
         //Filter on Name
-        assertEquals(1, BananaRama.read(Someone.class).where(equal(Someone.NAME, "Gordon")).count());
-        assertEquals(0, BananaRama.read(Someone.class).where(equal(Someone.NAME, "Victor")).count());
+        assertEquals(1, bananarama.read(Someone.class).where(equal(Someone.NAME, "Gordon")).count());
+        assertEquals(0, bananarama.read(Someone.class).where(equal(Someone.NAME, "Victor")).count());
         
         //Delete on attribute
-        BananaRama.delete(Someone.class)
+        bananarama.delete(Someone.class)
                 .where(greaterThan(Someone.AGE,15));
         
         //Verify that it was deleted
-        assertEquals(0, BananaRama.read(Someone.class).where(equal(Someone.NAME, "Gordon")).count());
+        assertEquals(0, bananarama.read(Someone.class).where(equal(Someone.NAME, "Gordon")).count());
     }
    
 }

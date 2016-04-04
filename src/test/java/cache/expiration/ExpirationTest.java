@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.log4j.BasicConfigurator;
+import org.bananarama.BananaRama;
 import org.bananarama.cache.IndexedCollectionAdapter;
 import org.bananarama.cache.annotation.BufferedOnIndexedCollection;
 import org.junit.After;
@@ -61,7 +62,7 @@ public class ExpirationTest {
                 .mapToObj(TimedEntry::new )
                 .collect(Collectors.toList());
         
-        IndexedCollectionAdapter adap = new IndexedCollectionAdapter();
+        IndexedCollectionAdapter adap = new IndexedCollectionAdapter(new BananaRama());
         
         adap.create(TimedEntry.class)
                 .from(entries.stream());

@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,7 +44,8 @@ import static org.junit.Assert.*;
  */
 @SuppressWarnings("unchecked")
 public class CacheTest {
-    Logger log = Logger.getLogger(CacheTest.class);
+
+    private final BananaRama bananarama = new BananaRama();
     
     @BeforeClass
     public static void setUpClass() {
@@ -59,25 +59,25 @@ public class CacheTest {
     
     public void checkCount(int n,ReadOperation<?> read){
         assertEquals(n, read.all().count());
-        assertEquals(n, BananaRama.read(CacheEntry.class).all().count());
-        assertEquals(n, BananaRama.using(ListAdapter.class).read(CacheEntry.class).all().count());
-        assertEquals(n, BananaRama.using(IndexedCollectionAdapter.class).read(CacheEntry.class).all().count());
+        assertEquals(n, bananarama.read(CacheEntry.class).all().count());
+        assertEquals(n, bananarama.using(ListAdapter.class).read(CacheEntry.class).all().count());
+        assertEquals(n, bananarama.using(IndexedCollectionAdapter.class).read(CacheEntry.class).all().count());
     }
     
     @Test
     public void testCaching()  {
         CacheEntry entry = new CacheEntry("testKey", "testVal");
         
-        CreateOperation<CacheEntry> create = BananaRama.create(CacheEntry.class);
+        CreateOperation<CacheEntry> create = bananarama.create(CacheEntry.class);
         assertNotNull(create);
         
-        ReadOperation<CacheEntry> read = BananaRama.read(CacheEntry.class);
+        ReadOperation<CacheEntry> read = bananarama.read(CacheEntry.class);
         assertNotNull(read);
         
-        UpdateOperation<CacheEntry> update = BananaRama.update(CacheEntry.class);
+        UpdateOperation<CacheEntry> update = bananarama.update(CacheEntry.class);
         assertNotNull(update);
         
-        DeleteOperation<CacheEntry> delete = BananaRama.delete(CacheEntry.class);
+        DeleteOperation<CacheEntry> delete = bananarama.delete(CacheEntry.class);
         assertNotNull(delete);
         
         checkCount(0, read);
@@ -87,9 +87,9 @@ public class CacheTest {
         checkCount(1, read);
         
         assertEquals(entry.getKey(), read.all().findFirst().get().getKey());
-        assertEquals(entry.getValue(), BananaRama.read(CacheEntry.class).all().findFirst().get().getValue());
-        assertEquals(entry.getValue(), BananaRama.using(IndexedCollectionAdapter.class).read(CacheEntry.class).all().findFirst().get().getValue());
-        assertEquals(entry.getValue(), BananaRama.using(ListAdapter.class).read(CacheEntry.class).all().findFirst().get().getValue());
+        assertEquals(entry.getValue(), bananarama.read(CacheEntry.class).all().findFirst().get().getValue());
+        assertEquals(entry.getValue(), bananarama.using(IndexedCollectionAdapter.class).read(CacheEntry.class).all().findFirst().get().getValue());
+        assertEquals(entry.getValue(), bananarama.using(ListAdapter.class).read(CacheEntry.class).all().findFirst().get().getValue());
         
         CacheEntry entryUpdated = new CacheEntry("testKey", "testValUpdated");
         
@@ -97,9 +97,9 @@ public class CacheTest {
         checkCount(1, read);
         
         assertEquals(entryUpdated.getKey(), read.all().findFirst().get().getKey());
-        assertEquals(entryUpdated.getValue(), BananaRama.read(CacheEntry.class).all().findFirst().get().getValue());
-        assertEquals(entryUpdated.getValue(), BananaRama.using(IndexedCollectionAdapter.class).read(CacheEntry.class).all().findFirst().get().getValue());
-        assertEquals(entryUpdated.getValue(), BananaRama.using(ListAdapter.class).read(CacheEntry.class).all().findFirst().get().getValue());
+        assertEquals(entryUpdated.getValue(), bananarama.read(CacheEntry.class).all().findFirst().get().getValue());
+        assertEquals(entryUpdated.getValue(), bananarama.using(IndexedCollectionAdapter.class).read(CacheEntry.class).all().findFirst().get().getValue());
+        assertEquals(entryUpdated.getValue(), bananarama.using(ListAdapter.class).read(CacheEntry.class).all().findFirst().get().getValue());
         
         delete.from(Stream.of(entryUpdated));
         checkCount(0, read);
@@ -108,17 +108,17 @@ public class CacheTest {
         create.from(Stream.of(entryUpdated));
         checkCount(1, read);
         
-        assertEquals(1, BananaRama.read(CacheEntry.class).where(equal(CacheEntry.VAL, entryUpdated.getVal())).count());
+        assertEquals(1, bananarama.read(CacheEntry.class).where(equal(CacheEntry.VAL, entryUpdated.getVal())).count());
         
-        BananaRama.delete(CacheEntry.class).where(equal(CacheEntry.KEY,entryUpdated.getKey()+"a"));
+        bananarama.delete(CacheEntry.class).where(equal(CacheEntry.KEY,entryUpdated.getKey()+"a"));
         checkCount(1, read);
         
-        BananaRama.delete(CacheEntry.class).where(equal(CacheEntry.KEY,entryUpdated.getKey()));
+        bananarama.delete(CacheEntry.class).where(equal(CacheEntry.KEY,entryUpdated.getKey()));
         checkCount(0, read);
         
         //Check indexes creation
         try{
-            IndexedCollectionAdapter adap = BananaRama.using(IndexedCollectionAdapter.class);
+            IndexedCollectionAdapter adap = bananarama.using(IndexedCollectionAdapter.class);
             
             Method m = IndexedCollectionAdapter.class.getDeclaredMethod("getCollection", Class.class);
             m.setAccessible(true);//Is a private, method, this is kind of ugly..
@@ -152,10 +152,10 @@ public class CacheTest {
         entry.setName("gordon");
         entry.setIdno(1);
         
-        BananaRama.create(CacheInheritedEntry.class)
+        bananarama.create(CacheInheritedEntry.class)
                 .from(Stream.of(entry));
         
-        CacheInheritedEntry read = BananaRama.read(CacheInheritedEntry.class)
+        CacheInheritedEntry read = bananarama.read(CacheInheritedEntry.class)
                 .all()
                 .findFirst()
                 .orElse(null);
@@ -163,7 +163,7 @@ public class CacheTest {
         assertNotNull(read);
         assertTrue(read == entry);
         try{
-            IndexedCollectionAdapter adap = BananaRama.using(IndexedCollectionAdapter.class);
+            IndexedCollectionAdapter adap = bananarama.using(IndexedCollectionAdapter.class);
             
             Method m = IndexedCollectionAdapter.class.getDeclaredMethod("getCollection", Class.class);
             m.setAccessible(true);//Is a private, method, this is kind of ugly..

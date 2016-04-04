@@ -62,6 +62,11 @@ public abstract class WeldingAdapter<S> implements Adapter<S>{
 
                 return this;
             }
+
+            @Override
+            public void close() throws Exception {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
         };
         
     }
@@ -104,6 +109,11 @@ public abstract class WeldingAdapter<S> implements Adapter<S>{
                 return adapters.parallelStream()
                         .flatMap(adapter -> adapter.read(clazz).fromKeys(keys,options));
             }
+
+            @Override
+            public void close() throws Exception {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
         };
     }
     
@@ -127,6 +137,11 @@ public abstract class WeldingAdapter<S> implements Adapter<S>{
                 .forEach(adapter -> adapter.update(clazz).from(data, options));
 
                 return this;   
+            }
+
+            @Override
+            public void close() throws Exception {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
         };
     }
@@ -168,6 +183,11 @@ public abstract class WeldingAdapter<S> implements Adapter<S>{
                         .forEach(adapter -> adapter.delete(clazz).from(data,options));
                 
                 return this;
+            }
+
+            @Override
+            public void close() throws Exception {
+                throw new UnsupportedOperationException("Not supported yet.");
             }
         };
     }

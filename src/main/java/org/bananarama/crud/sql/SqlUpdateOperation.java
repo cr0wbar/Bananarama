@@ -74,6 +74,5 @@ public class SqlUpdateOperation<T> extends AbstractSqlOperation<T> implements Up
                 StringUtils.mkString(accessorsByIsKey.get(false).stream().map(FieldAccessor::getName),""," = ?,"," = ?"),
                 StringUtils.mkString(accessorsByIsKey.get(true).stream().map(FieldAccessor::getName),""," = ? AND "," = ?"));
     }
-    
 
 }

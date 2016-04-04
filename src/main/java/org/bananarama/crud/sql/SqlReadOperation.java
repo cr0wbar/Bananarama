@@ -135,4 +135,5 @@ public class SqlReadOperation<T>extends AbstractSqlOperation<T> implements ReadO
         
         return getDataFromDb(whereClause,options,builder);
     }
+    
 }

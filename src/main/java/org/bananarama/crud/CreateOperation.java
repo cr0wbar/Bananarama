@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  *
  * @author Guglielmo De Concini
  */
-public interface CreateOperation<T> {
+public interface CreateOperation<T> extends AutoCloseable{
     
     public CreateOperation<T> from(Stream<T> data);
 

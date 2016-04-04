@@ -47,6 +47,11 @@ public class ListAdapter implements Adapter<Entry>{
            public CreateOperation<T> from(Stream<T> data, QueryOptions options) {
                return from(data);
            }
+
+           @Override
+           public void close() throws Exception {
+               
+           }
        };
     }
 
@@ -82,6 +87,11 @@ public class ListAdapter implements Adapter<Entry>{
            public Stream<T> fromKeys(List<?> keys, QueryOptions options) {
                throw new UnsupportedOperationException("Not supported yet.");
            }
+
+           @Override
+           public void close() throws Exception {
+               
+           }
        };
     }
 
@@ -100,6 +110,11 @@ public class ListAdapter implements Adapter<Entry>{
            @Override
            public UpdateOperation<T> from(Stream<T> data, QueryOptions options) {
               return from(data);
+           }
+
+           @Override
+           public void close() throws Exception {
+               
            }
        };
     }
@@ -131,6 +146,11 @@ public class ListAdapter implements Adapter<Entry>{
            @Override
            public DeleteOperation<T> from(Stream<T> data, QueryOptions options) {
                return from(data);
+           }
+
+           @Override
+           public void close() throws Exception {
+               
            }
        };
     }

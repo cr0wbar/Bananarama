@@ -15,6 +15,8 @@
  */
 package org.bananarama.crud.magic;
 
+import org.bananarama.BananaRama;
+import org.bananarama.annotation.BananaRamaAdapter;
 import org.bananarama.crud.CreateOperation;
 import org.bananarama.crud.DeleteOperation;
 import org.bananarama.crud.ReadOperation;
@@ -27,9 +29,16 @@ import org.bananarama.annotation.MapWith;
  * @author Guglielmo De Concini
  */
 @SuppressWarnings("unchecked")
+@BananaRamaAdapter(requires = BananaRama.class)
 public class MagicAdapter implements Adapter<Object>{
     
-    private static <O> ObjToDto<O,?> getMapper(Class<O> clazz){
+    private final BananaRama parent;
+    
+    public MagicAdapter(BananaRama parent){
+        this.parent = parent;
+    }
+    
+    private static <O,D> ObjToDto<O,D> getMapper(Class<O> clazz){
         if(!clazz.isAnnotationPresent(MapWith.class))
             throw new IllegalArgumentException(clazz.getName() + " is not annotated with " + MapWith.class.getName());
         
@@ -37,47 +46,66 @@ public class MagicAdapter implements Adapter<Object>{
         
         try {
             return magic.value().newInstance();
-        } catch (InstantiationException | IllegalAccessException ex) {
-           throw new IllegalStateException(ex);
+        }
+        catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException("Can't instantiate class: " + magic.value().getName(), e);
         }
     }
     
     @Override
-    public <T> CreateOperation<T> create(Class<T> clazz)throws IllegalArgumentException{
-        ObjToDto<T,?> mapper = getMapper(clazz);
-        
-        if(mapper != null)
-            return new MagicCreateOperation<>(mapper);
-      
-        throw new IllegalArgumentException(clazz.getName() + " must be annotated with " + MapWith.class);
+    public <T> CreateOperation<T> create(Class<T> clazz){
+        return createInternal(clazz);
     }
 
+    private <O,D> CreateOperation<O> createInternal(Class<O> clazz){
+        ObjToDto<O,D> mapper = getMapper(clazz);
+        
+        if(mapper != null)
+            return new MagicCreateOperation<>(mapper,parent.create(mapper.dtoType()));
+        
+        throw new IllegalArgumentException(clazz.getName() + " must be annotated with " + MapWith.class);
+    }
+    
     @Override
-    public <T> ReadOperation<T> read(Class<T> clazz) throws IllegalArgumentException {
-        ObjToDto<T,?> mapper = getMapper(clazz);
+    public <T> ReadOperation<T> read(Class<T> clazz){
+        return readInternal(clazz);
+    }
+
+    private <O,D> ReadOperation<O> readInternal(Class<O> clazz){
+        ObjToDto<O,D> mapper = getMapper(clazz);
         
         if(mapper != null)
-            return new MagicReadOperation(mapper);
+            return new MagicReadOperation(mapper,parent.read(mapper.dtoType()));
         
         throw new IllegalArgumentException(clazz.getName() + " must be annotated with " + MapWith.class);
     }
-
+    
+    @SuppressWarnings("rawtypes")
     @Override
     public <T> UpdateOperation<T> update(Class<T> clazz) throws IllegalArgumentException {
-        ObjToDto<T,?> mapper = getMapper(clazz);
+        return updateInternal(clazz);
+    }
+
+    private <O,D> UpdateOperation<O> updateInternal(Class<O> clazz){
+        ObjToDto<O,D> mapper = getMapper(clazz);
         
         if(mapper != null)
-            return new MagicUpdateOperation(mapper);
+            return new MagicUpdateOperation(mapper,parent.update(mapper.dtoType()));
         
         throw new IllegalArgumentException(clazz.getName() + " must be annotated with " + MapWith.class);
     }
-
+    
+    @SuppressWarnings("rawtypes")
     @Override
     public <T> DeleteOperation<T> delete(Class<T> clazz) throws IllegalArgumentException {
-        ObjToDto<T,?> mapper = getMapper(clazz);
+        return deleteInternal(clazz);
+    }
+    
+    private <O,D> DeleteOperation<O> deleteInternal(Class<O> clazz){
+        ObjToDto<O,D> mapper = getMapper(clazz);
         
         if(mapper != null)
-            return new MagicDeleteOperation(mapper);
+            return new MagicDeleteOperation(mapper,parent.delete(mapper.dtoType()));
         
         throw new IllegalArgumentException(clazz.getName() + " must be annotated with " + MapWith.class);
     }

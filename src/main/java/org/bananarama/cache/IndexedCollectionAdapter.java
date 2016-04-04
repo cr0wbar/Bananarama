@@ -37,7 +37,6 @@ import org.bananarama.crud.ReadOperation;
 import org.bananarama.crud.UpdateOperation;
 import org.bananarama.crud.Adapter;
 import org.bananarama.crud.sql.accessor.FieldAccessor;
-import org.bananarama.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -53,12 +52,14 @@ import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.ConfigurationFactory;
 import net.sf.ehcache.config.PersistenceConfiguration;
 import org.apache.log4j.Logger;
+import org.bananarama.annotation.BananaRamaAdapter;
 import org.bananarama.cache.providers.collection.IndexedCollectionProvider;
 
 /**
  * 
  * @author Guglielmo De Concini
  */
+@BananaRamaAdapter(requires = BananaRama.class)
 public final class IndexedCollectionAdapter implements Adapter<Object> {
     
     private static final String CACHE_NAME = "bananarama:indexed:buffers";
@@ -69,8 +70,9 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
     private static final int ATTRIBUTE_MODIFIERS =  Modifier.PUBLIC
             | Modifier.FINAL
             | Modifier.STATIC;
+    private final BananaRama parent;
     
-    public IndexedCollectionAdapter(){
+    public IndexedCollectionAdapter(BananaRama parent){
         //This must be configurable in the future
         final Configuration conf = ConfigurationFactory
                 .parseConfiguration();
@@ -81,6 +83,7 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
         
         cacheManager =  CacheManager.newInstance(conf);
         cache = cacheManager.addCacheIfAbsent(CACHE_NAME);
+        this.parent = parent;
     }
     
     @SuppressWarnings("unchecked")
@@ -89,7 +92,7 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
         //checked before, otherwise it's a bug
         Adapter<?> backingAdapter;
         
-        if( (  backingAdapter= BananaRama.using(clazz.getAnnotation(Banana.class).adapter())) == null)
+        if( (  backingAdapter= parent.using(clazz.getAnnotation(Banana.class).adapter())) == null)
             throw new NullPointerException("The backing adapter for class " + clazz.getName() + " cannot be found. This should never happen");
 
         return (Adapter<? super T>)backingAdapter;
@@ -236,6 +239,11 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                 coll.addAll(buf);
                 return this;
             }
+
+            @Override
+            public void close() throws Exception {
+
+            }
         };
     }
     
@@ -317,6 +325,11 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
             public Stream<T> fromKeys(List<?> keys, QueryOptions options) {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
+
+            @Override
+            public void close() throws Exception {
+
+            }
         };
     }
     
@@ -360,6 +373,11 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                     getBackingAdapter(clazz).update(clazz).from(buf.stream());
                 
                 return this;
+            }
+
+            @Override
+            public void close() throws Exception {
+
             }
         };
     }
@@ -444,6 +462,11 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
                             .from((Stream<T>) buf.stream());
                 
                 return this;
+            }
+
+            @Override
+            public void close() throws Exception {
+
             }
         };
     }

@@ -37,15 +37,26 @@ import java.util.concurrent.locks.Lock;
  * @author Guglielmo De Concini
  */
 @SuppressWarnings({"unchecked", "rawtypes"})
-public class BananaRama {
-    private static final int CONCURRENCY_LEVEL = 32;
+public class BananaRama implements Adapter<Object>{
     
-    private static final StripedLock slock = new StripedLock(CONCURRENCY_LEVEL);
-    private static final Map<Class<?>, Adapter<?>> ADAPTERS = new HashMap<>();
+    private final StripedLock slock;
+    private final Map<Class<?>, Adapter<?>> adapters;
     
-    private BananaRama(){}
+    public BananaRama(){
+        this(32);
+    }
     
-    private static  Adapter getAdapterForClass(Class<?> clazz){
+    public BananaRama(int concurrencyLevel){
+        slock = new StripedLock(concurrencyLevel);
+        adapters = new HashMap<>();
+        init();//Avoids leaking this in constructor
+    }
+   
+    private void init(){
+        adapters.put(BananaRama.class, this);
+    }
+ 
+    private  Adapter getAdapterForClass(Class<?> clazz){
         if(!clazz.isAnnotationPresent(Banana.class))    
             throw new IllegalArgumentException(clazz.getName() + " is not annotated with " + Banana.class.getName());
         
@@ -58,7 +69,7 @@ public class BananaRama {
         return getAdapter(banana.adapter());
     }
     
-    private static <T extends Adapter> T getAdapter(Class<T> adapterClass){
+    private <T extends Adapter> T getAdapter(Class<T> adapterClass){
         //Acquire lock on class, this will block arriving calls for a specific
         //adapter, while the adapter is loading
         Lock lock = slock.getLock(adapterClass);
@@ -66,7 +77,7 @@ public class BananaRama {
         
         try{
     
-            T adapter = (T) ADAPTERS.get(adapterClass);
+            T adapter = (T) adapters.get(adapterClass);
             
             if(adapter == null){
                 //First time that we need the adapter
@@ -103,7 +114,7 @@ public class BananaRama {
                     }
                 }
                 //Register adapter
-                ADAPTERS.put(adapterClass, adapter);
+                adapters.put(adapterClass, adapter);
             }
             
             return adapter;
@@ -114,23 +125,23 @@ public class BananaRama {
         }
     }
     
-    public static <T extends Adapter> T using(Class<T> clazz) {
+    public <T extends Adapter> T using(Class<T> clazz) {
         return getAdapter(clazz);
     }
     
-    public static <T> CreateOperation <T> create(Class<T> clazz){
+    public <T> CreateOperation <T> create(Class<T> clazz){
         return getAdapterForClass(clazz).create(clazz);
     }
     
-    public static <T> ReadOperation <T> read(Class<T> clazz){
+    public <T> ReadOperation <T> read(Class<T> clazz){
         return getAdapterForClass(clazz).read(clazz);
     }
     
-    public static <T> UpdateOperation<T> update(Class<T> clazz){
+    public <T> UpdateOperation<T> update(Class<T> clazz){
         return getAdapterForClass(clazz).update(clazz);
     }
     
-    public static <T> DeleteOperation<T> delete(Class<T> clazz){
+    public <T> DeleteOperation<T> delete(Class<T> clazz){
         return getAdapterForClass(clazz).delete(clazz);
     }
     

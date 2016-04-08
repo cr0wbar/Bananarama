@@ -194,7 +194,7 @@ public abstract class AbstractSqlOperation <T> implements AutoCloseable{
     
     private static SQLException findCause(SQLException ex){
         if(ex.getNextException() != null)
-            return findCause(ex);
+            return findCause(ex.getNextException());
         return ex;
     }
     

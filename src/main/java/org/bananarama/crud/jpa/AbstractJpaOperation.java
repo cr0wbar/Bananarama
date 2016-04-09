@@ -15,6 +15,7 @@
  */
 package org.bananarama.crud.jpa;
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 
 /**
@@ -49,5 +50,17 @@ public class AbstractJpaOperation<T> implements AutoCloseable{
     
     public void commitTransaction(){
         em.getTransaction().commit();
+    }
+    
+     /**
+     * @return the {@link Entity} name value or {@link Class#getSimpleName()} if
+     * not annotated with {@link Entity} or the {@link Entity#name()} is not defined
+     */
+    public static String getEntityName(Class<?> clazz){
+        Entity entity = clazz.getAnnotation(Entity.class);
+        if(entity != null && !entity.name().isEmpty())
+               return entity.name();
+        
+        return clazz.getSimpleName();
     }
 }

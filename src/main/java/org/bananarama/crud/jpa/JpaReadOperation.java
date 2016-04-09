@@ -18,11 +18,11 @@ package org.bananarama.crud.jpa;
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import org.bananarama.crud.ReadOperation;
+import org.bananarama.crud.jpa.JpaOperationOption.QueryType;
 import org.bananarama.crud.util.cqlogic.CQE2SQL;
 import java.util.List;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -59,6 +59,7 @@ public class JpaReadOperation<T> extends AbstractJpaOperation<T> implements Read
         return where(obj, null);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Override
     public <Q> Stream<T> where(Q obj, QueryOptions options) {
         String clause;
@@ -75,10 +76,19 @@ public class JpaReadOperation<T> extends AbstractJpaOperation<T> implements Read
         
         //For now we will use this simple approach, which transforms the query to a string,
         //JPA will then reparse the string in order to transform it in matching criteria
-        TypedQuery<T> tq = em.createQuery(FROM + clazz.getSimpleName() + clause,clazz);
+        final javax.persistence.Query query;
+        final JpaOperationOption jpaOperationOption;
         
-        return tq.getResultList().stream();
+        if(options != null
+                && (jpaOperationOption = options.get(JpaOperationOption.class)) != null
+                && jpaOperationOption.getQueryType().equals(QueryType.NATIVE))
+            query = em.createNativeQuery(clause,clazz);
+        else
+            query = em.createQuery(FROM + getEntityName(clazz) + clause,clazz);
+        
+        return query.getResultList().stream();
     }
+    
 
     @Override
     public Stream<T> fromKeys(List<?> keys) {

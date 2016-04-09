@@ -31,9 +31,10 @@ public class Crud {
 ```
 ### Built-In persistency layer support
 BananaRama natively supports the following frameworks/persistency layers
-1. [JDBC] (#jdbc) - fast POJOs to SQL and viceversa.
-2. [JPA](#jpa) - Manage JPA entities with BananaRama.
-3. [CQEngine](#cqengine) - Integrated support for CQEngine indexed collection on top of other persistency layers or standalone.
+
+* [JDBC] (#jdbc) - fast POJOs to SQL and viceversa.
+* [JPA](#jpa) - Manage JPA entities with BananaRama.
+* [CQEngine](#cqengine) - Integrated support for CQEngine indexed collection on top of other persistency layers or standalone.
 
 ## Simplest Example
 Integration of entities in BananaRama is done in two steps.
@@ -42,6 +43,7 @@ First we need to create a class which implements the  `Adapter` interface. This 
 ```
 public final class NoOpAdapter implements Adapter<Object>{
     //A really simple adapter which does nothing :)
+    
     @Override
     public <T> CreateOperation<T> create(Class<T> clazz) {
         return new CreateOperation<T>() {
@@ -53,6 +55,10 @@ public final class NoOpAdapter implements Adapter<Object>{
             @Override
             public CreateOperation<T> from(Stream<T> data, QueryOptions options) {
                 return this;
+            }
+
+            @Override
+            public void close() throws Exception {
             }
         };
     }
@@ -89,6 +95,10 @@ public final class NoOpAdapter implements Adapter<Object>{
             public Stream<T> fromKeys(List<?> keys, QueryOptions options) {
                 return Stream.empty();
             }
+
+            @Override
+            public void close() throws Exception {
+            }
             
         };
     }
@@ -105,6 +115,10 @@ public final class NoOpAdapter implements Adapter<Object>{
             @Override
             public UpdateOperation<T> from(Stream<T> data, QueryOptions options) {
                 return this;
+            }
+
+            @Override
+            public void close() throws Exception {
             }
         };
     }
@@ -131,39 +145,12 @@ public final class NoOpAdapter implements Adapter<Object>{
             public DeleteOperation<T> from(Stream<T> data, QueryOptions options) {
                 return this;
             }
+
+            @Override
+            public void close() throws Exception {
+            }
         };
     }
-    
-}
-```
-
-Then annotate the entity you wish to manage
-```java
-@Banana(adapter = NoOpAdapter.class)
-public class Entry {
-    private String key,val;
-    
-    public Entry(String key,String val){
-        this.val = val;
-        this.key = key;
-    }
-    
-    public String getValue(){
-        return val;
-    }
-
-    public String getKey(){
-        return key;
-    }
-
-    public String getVal() {
-        return val;
-    }
-
-    public void setVal(String val) {
-        this.val = val;
-    }
-
 }
 ```
 The `@Banana` annotation  takes care of redirecting BananaRama to the
@@ -198,11 +185,90 @@ As a general rule, take into account the following table for thread-safety of Ba
 Adapter | &#10004;
 Any CRUD operation | &#10006;
  
-## Built-In adapters
+## Built-In Adapters
 ### JDBC
-TODO
+The Jdbc adapter is designed to do fast and simple CRUD operations using JDBC in conjunction with any driver you want to use. So far it has been tested successfully on H2 and PostgreSQL drivers.
+
+First of all implement you adapter which extends the `SQLAdapter` class
+```java
+public class MySqlAdapter extends SqlAdapter {
+
+    public MySqlAdapter() {
+        super(DataSourceFactory.getDataSource());
+    }
+
+}
+```
+Then you can automatically map database tables to classes by annotating them 
+```java
+@Banana(adapter = MySqlAdapter.class)
+@Table(name = "pojo")
+@Convert(type = LocalDateTime.class,with = LocalDateTimeConverter.class)
+public class Pojo {
+
+    @Id 
+    private int id;
+
+    @Column(name = "name")
+    private String laBel;
+    
+    private Double xyz;
+    
+    @ConvertWith(MapConverter.class)
+    private Map<String,String> attrs;
+    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int idno) {
+        this.id = idno;
+    }
+
+    public String getLaBel() {
+        return laBel;
+    }
+
+    public void setLaBel(String laBel) {
+        this.laBel = laBel;
+    }
+
+    public Double getXyz() {
+        return xyz;
+    }
+
+    public void setXyz(Double xyz) {
+        this.xyz = xyz;
+    }
+
+    public Map<String, String> getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(Map<String, String> attrs) {
+        this.attrs = attrs;
+    }
+}
+```
+All annotation in the previous example are part of BananaRama. Here is a quick overview of them:
+
+*  `@Id` identifies key fields. It may be used on multiple fields, but use it carefully: if fields `a` and `b` of type `A` and `B` define the object's identity, then the `List` passed to the `fromKeys` method should contain alternating values of type `A` and `B`.
+* `@Column` and `@Table` work very similarly to the the equivalent JPA annotations, with some extra features explained in the javadoc.
+* `@Convert` and `@ConvertWith` provide the adapter with custom SQL types translators. The first is for defining global translators for the annotated class, the latter is for setting a translator for a specific field and overrides any global translator.  
+
 ### JPA
-TODO
+Implement a custom adapter in order to access a specific persistency unit.
+```java
+public class MyJpaAdapter extends AbstractJpaAdapter{
+    
+    public MyJpaAdapter() {
+        super("my_awesome_unit");//must match a persistency unit name in persistence.xml
+    }
+
+}
+```
+Then simply annotate with `Banana( adapter = MyJpaAdapter.class)` any class annotated with `@Entity` and other annotations which are part of JPA and use it with BananaRama.
+
 ### CqEngine
 TODO
 ### Magic (DTO to Object and viceversa)

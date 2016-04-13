@@ -17,10 +17,6 @@ package org.bananarama.crud.magic;
 
 import org.bananarama.BananaRama;
 import org.bananarama.annotation.BananaRamaAdapter;
-import org.bananarama.crud.CreateOperation;
-import org.bananarama.crud.DeleteOperation;
-import org.bananarama.crud.ReadOperation;
-import org.bananarama.crud.UpdateOperation;
 import org.bananarama.crud.Adapter;
 import org.bananarama.annotation.MapWith;
 
@@ -53,11 +49,11 @@ public class MagicAdapter implements Adapter<Object>{
     }
     
     @Override
-    public <T> CreateOperation<T> create(Class<T> clazz){
+    public <T> MagicCreateOperation<T,?,?> create(Class<T> clazz){
         return createInternal(clazz);
     }
 
-    private <O,D> CreateOperation<O> createInternal(Class<O> clazz){
+    private <O,D> MagicCreateOperation<O,D,?> createInternal(Class<O> clazz){
         ObjToDto<O,D> mapper = getMapper(clazz);
         
         if(mapper != null)
@@ -67,11 +63,11 @@ public class MagicAdapter implements Adapter<Object>{
     }
     
     @Override
-    public <T> ReadOperation<T> read(Class<T> clazz){
+    public <T> MagicReadOperation<T,?,?> read(Class<T> clazz){
         return readInternal(clazz);
     }
 
-    private <O,D> ReadOperation<O> readInternal(Class<O> clazz){
+    private <O,D> MagicReadOperation<O,D,?> readInternal(Class<O> clazz){
         ObjToDto<O,D> mapper = getMapper(clazz);
         
         if(mapper != null)
@@ -82,11 +78,11 @@ public class MagicAdapter implements Adapter<Object>{
     
     @SuppressWarnings("rawtypes")
     @Override
-    public <T> UpdateOperation<T> update(Class<T> clazz) throws IllegalArgumentException {
+    public <T> MagicUpdateOperation<T,?,?> update(Class<T> clazz) throws IllegalArgumentException {
         return updateInternal(clazz);
     }
 
-    private <O,D> UpdateOperation<O> updateInternal(Class<O> clazz){
+    private <O,D> MagicUpdateOperation<O,D,?> updateInternal(Class<O> clazz){
         ObjToDto<O,D> mapper = getMapper(clazz);
         
         if(mapper != null)
@@ -97,11 +93,11 @@ public class MagicAdapter implements Adapter<Object>{
     
     @SuppressWarnings("rawtypes")
     @Override
-    public <T> DeleteOperation<T> delete(Class<T> clazz) throws IllegalArgumentException {
+    public <T> MagicDeleteOperation<T,?,?> delete(Class<T> clazz) throws IllegalArgumentException {
         return deleteInternal(clazz);
     }
     
-    private <O,D> DeleteOperation<O> deleteInternal(Class<O> clazz){
+    private <O,D> MagicDeleteOperation<O,?,?> deleteInternal(Class<O> clazz){
         ObjToDto<O,D> mapper = getMapper(clazz);
         
         if(mapper != null)

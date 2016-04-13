@@ -189,7 +189,7 @@ Any CRUD operation | &#10006;
 ### JDBC
 The Jdbc adapter is designed to do fast and simple CRUD operations using JDBC in conjunction with any driver you want to use. So far it has been tested successfully on H2 and PostgreSQL drivers.
 
-First of all implement you adapter which extends the `SQLAdapter` class
+First of all implement your adapter which extends the `SQLAdapter` class
 ```java
 public class MySqlAdapter extends SqlAdapter {
 

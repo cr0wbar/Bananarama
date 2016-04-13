@@ -15,10 +15,6 @@
  */
 package org.bananarama.crud.jpa;
 
-import org.bananarama.crud.CreateOperation;
-import org.bananarama.crud.DeleteOperation;
-import org.bananarama.crud.ReadOperation;
-import org.bananarama.crud.UpdateOperation;
 import org.bananarama.crud.Adapter;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -28,7 +24,7 @@ import javax.persistence.Persistence;
  * 
  * @author Guglielmo De Concini
  */
-public class AbstractJpaAdapter<S> implements Adapter<S>{
+public class AbstractJpaAdapter implements Adapter<Object>{
 
     protected final EntityManagerFactory entityManagerFactory;
     
@@ -41,22 +37,22 @@ public class AbstractJpaAdapter<S> implements Adapter<S>{
     }
     
     @Override
-    public <T extends S> CreateOperation<T> create(Class<T> clazz) {
+    public <T> JpaCreateOperation<T> create(Class<T> clazz) {
         return new JpaCreateOperation<>(entityManagerFactory.createEntityManager(),clazz);
     }
 
     @Override
-    public <T extends S> ReadOperation<T> read(Class<T> clazz) {
+    public <T> JpaReadOperation<T> read(Class<T> clazz) {
         return new JpaReadOperation<>(entityManagerFactory.createEntityManager(),clazz);
     }
 
     @Override
-    public <T extends S> UpdateOperation<T> update(Class<T> clazz) {
+    public <T> JpaUpdateOperation<T> update(Class<T> clazz) {
         return new JpaUpdateOperation<>(entityManagerFactory.createEntityManager(),clazz);
     }
 
     @Override
-    public <T extends S> DeleteOperation<T> delete(Class<T> clazz) {
+    public <T> JpaDeleteOperation<T> delete(Class<T> clazz) {
         return new JpaDeleteOperation<>(entityManagerFactory.createEntityManager(),clazz);
     }
     

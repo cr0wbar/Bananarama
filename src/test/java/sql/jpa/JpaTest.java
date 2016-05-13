@@ -37,11 +37,8 @@ import static org.junit.Assert.*;
  * @author Guglielmo De Concini
  */
 public class JpaTest {
-    private final BananaRama bananarama;
+    private final static  BananaRama bananarama = new BananaRama();
     
-    public JpaTest(){
-        this.bananarama = new BananaRama();
-    }
     
     @BeforeClass
     public static void setUpClass() {

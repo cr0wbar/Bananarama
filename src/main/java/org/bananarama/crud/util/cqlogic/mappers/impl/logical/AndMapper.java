@@ -25,13 +25,13 @@ import org.bananarama.crud.util.cqlogic.mappers.Mapper;
  *
  * @author Guglielmo De Concini
  */
-public class AndMapper implements Mapper<And>{
+public class AndMapper implements Mapper<And<?>>{
     private static final String AND = " AND ";
     private static final String TC = " ) ";
     private static final String SC = " ( ";
     
     @Override @SuppressWarnings("unchecked")
-    public String map(And q) {
+    public String map(And<?> q) {
         StringBuilder sb = new StringBuilder();
         
         //Open parenthesis

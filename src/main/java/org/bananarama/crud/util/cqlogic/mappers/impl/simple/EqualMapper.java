@@ -22,10 +22,10 @@ import static org.bananarama.crud.util.cqlogic.mappers.SqlTypeStringTranslator.*
  *
  * @author Guglielmo De Concini
  */
-public class EqualMapper implements Mapper<Equal>{
+public class EqualMapper implements Mapper<Equal<?,?>>{
 
     @Override
-    public String map(Equal q) {     
+    public String map(Equal<?,?> q) {     
         if(q.getValue() != null)
             return String.format("%s = %s",q.getAttributeName(),adapt(q.getValue()));
         else

@@ -42,13 +42,4 @@ public class StripedLock{
        return locks[obj.hashCode() % concurrencyLevel];
    }
     
-    public void lockAll(){
-        for(ReentrantLock lock: locks)
-            lock.lock();
-    }
-    
-    public void unlockAll(){
-        for(ReentrantLock lock: locks)
-            lock.unlock();
-    }
 }

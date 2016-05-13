@@ -19,7 +19,13 @@ import com.googlecode.cqengine.query.option.QueryOptions;
 import org.bananarama.crud.DeleteOperation;
 import org.bananarama.crud.sql.accessor.FieldAccessor;
 import org.bananarama.crud.sql.accessor.Getter;
+import org.bananarama.crud.util.cqlogic.CQE2SQL;
+import org.bananarama.exception.FailedOperationException;
 import org.bananarama.util.StringUtils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,7 +46,7 @@ public class SqlDeleteOperation<T> extends AbstractSqlOperation<T> implements De
     @Override
     public <Q> SqlDeleteOperation<T> where(Q whereClause) {
 
-        throw new UnsupportedOperationException("SQL DELETE is not supported using a WHERE clause yet");
+        return where(whereClause, null);
     }
 
     @Override
@@ -60,8 +66,38 @@ public class SqlDeleteOperation<T> extends AbstractSqlOperation<T> implements De
     }
 
     @Override
-    public <Q> DeleteOperation<T> where(Q whereClause, QueryOptions options) {
-        return where(whereClause);
+    public <Q> SqlDeleteOperation<T> where(Q whereClause, QueryOptions options) {
+        String currentTableName = getTableNameForCurrentSession(options);
+        
+        String whereClauseString = null;
+        if(whereClause instanceof String)
+            whereClauseString = (String) whereClause;
+        else if(whereClause instanceof com.googlecode.cqengine.query.Query)
+            whereClauseString = CQE2SQL.convertCqQuery((com.googlecode.cqengine.query.Query<?>) whereClause);
+        
+        String sql = "DELETE from " + currentTableName + whereClauseString;
+        
+        try(Connection connection = dataSource.getConnection()){
+            try(Statement statement = connection.createStatement()){
+                statement.executeUpdate(sql);
+                
+                log.info("Deleted record(s) on table " + currentTableName + " (" + clazz.getName() + ")");
+
+            }
+        }
+        catch (Exception ex) {
+            final Exception sub;
+
+            if (ex instanceof SQLException)
+                sub = findCause((SQLException) ex);
+            else
+                sub = ex;
+
+            throw new FailedOperationException("Deleting data on DB failed (" + clazz.getName() + ")", sub);
+        }
+        
+        
+        return this;
     }
 
     @Override

@@ -21,8 +21,10 @@ import org.bananarama.crud.ReadOperation;
 import org.bananarama.crud.jpa.JpaOperationOption.QueryType;
 import org.bananarama.crud.util.cqlogic.CQE2SQL;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
@@ -34,19 +36,24 @@ public class JpaReadOperation<T> extends AbstractJpaOperation<T> implements Read
 
     private static final String FROM = " FROM ";
         
-    public JpaReadOperation(EntityManager em,Class<T> clazz) {
-        super(em,clazz);
+    public JpaReadOperation(EntityManagerFactory factory,Class<T> clazz) {
+        super(factory,clazz);
     }
 
     @Override
     public Stream<T> all() {
         //Simple Select all operation
+        final EntityManager em = factory.createEntityManager();
+        
         CriteriaQuery<T> cq = em.getCriteriaBuilder()
                 .createQuery(clazz);
         Root<T> rootEntry = cq.from(clazz);
         CriteriaQuery<T> all = cq.select(rootEntry);
         
-        return em.createQuery(all).getResultList().stream();
+        List<T> results = em.createQuery(all).getResultList();
+        close(em);
+        
+        return results.stream();
     }
 
     @Override
@@ -79,6 +86,9 @@ public class JpaReadOperation<T> extends AbstractJpaOperation<T> implements Read
         final javax.persistence.Query query;
         final JpaOperationOption jpaOperationOption;
         
+        final EntityManager em = factory.createEntityManager();
+        
+        
         if(options != null
                 && (jpaOperationOption = options.get(JpaOperationOption.class)) != null
                 && jpaOperationOption.getQueryType().equals(QueryType.NATIVE))
@@ -86,20 +96,27 @@ public class JpaReadOperation<T> extends AbstractJpaOperation<T> implements Read
         else
             query = em.createQuery(FROM + getEntityName(clazz) + clause,clazz);
         
-        return query.getResultList().stream();
+        List<T> results = query.getResultList();
+        
+        em.close();
+        
+        return results.stream();
     }
     
 
     @Override
     public Stream<T> fromKeys(List<?> keys) {
-        return keys.stream()
-                .map(key -> em.find(clazz, key));        
+        final EntityManager em = factory.createEntityManager();
+        final List<T> results =  keys.stream()
+                .map(key -> em.find(clazz, key))
+                .collect(Collectors.toList());        
+        close(em);
+        return results.stream();
     }
 
     @Override
     public Stream<T> fromKeys(List<?> keys, QueryOptions options) {
-        return keys.stream()
-                .map(key -> em.find(clazz, key));   
+        return fromKeys(keys);
     }
    
     

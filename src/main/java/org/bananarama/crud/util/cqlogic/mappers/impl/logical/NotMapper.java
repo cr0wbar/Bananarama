@@ -24,14 +24,14 @@ import org.bananarama.crud.util.cqlogic.mappers.Mapper;
  *
  * @author Guglielmo De Concini
  */
-public class NotMapper implements Mapper<Not>{
+public class NotMapper implements Mapper<Not<?>>{
         private static final String NOT = " NOT ";
         private static final String TC = " ) ";
         private static final String SC = " ( ";
 
     @Override @SuppressWarnings("unchecked")
-    public String map(Not q) {
-        Query negated = q.getNegatedQuery();
+    public String map(Not<?> q) {
+        Query<?> negated = q.getNegatedQuery();
 
         return NOT + SC + CQE2SQL.getMapper((Class<Query<?>>)negated.getClass()).map(negated) + TC;
     }

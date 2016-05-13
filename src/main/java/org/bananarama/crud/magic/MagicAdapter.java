@@ -24,7 +24,7 @@ import org.bananarama.annotation.MapWith;
  * 
  * @author Guglielmo De Concini
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","rawtypes"})
 @BananaRamaAdapter(requires = BananaRama.class)
 public class MagicAdapter implements Adapter<Object>{
     

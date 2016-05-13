@@ -23,7 +23,8 @@ import org.bananarama.annotation.Banana;
  */
 @Banana(adapter = ListAdapter.class)
 public class Entry {
-    private String key,val;
+    private final String key;
+    private String val;
     
     public Entry(String key,String val){
         this.val = val;

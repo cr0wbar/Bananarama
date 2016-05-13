@@ -26,13 +26,13 @@ import org.bananarama.crud.util.cqlogic.mappers.Mapper;
  *
  * @author Guglielmo De Concini
  */
-public class OrMapper implements Mapper<Or>{
+public class OrMapper implements Mapper<Or<?>>{
     private static final String OR = " OR ";
     private static final String TC = " ) ";
     private static final String SC = " ( ";
     
     @Override @SuppressWarnings("unchecked")
-    public String map(Or q) {
+    public String map(Or<?> q) {
         StringBuilder sb = new StringBuilder();
         //Open parenthesis
         sb.append(SC);

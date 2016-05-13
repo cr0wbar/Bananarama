@@ -20,7 +20,7 @@ package org.bananarama.exception;
  * @author Guglielmo De Concini
  */
 public class IllegalOperationException extends RuntimeException{
-    
+    static final long serialVersionUID = 1L;
     public IllegalOperationException(String message){
         super(message);
     }

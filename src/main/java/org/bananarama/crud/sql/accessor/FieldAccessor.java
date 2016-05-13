@@ -74,7 +74,7 @@ public abstract class FieldAccessor {
             return onClass.getDeclaredMethod(methodName,parameterTypes);
         }
         catch(NoSuchMethodException ex){
-            throw new IllegalArgumentException("Can't find getter ", ex);
+            throw new IllegalArgumentException("Can't find method " + methodName, ex);
         }
         
     }
@@ -90,9 +90,8 @@ public abstract class FieldAccessor {
         if( clazz == null )
             return new HashMap<>();
         
-        Map<String,Field> fields;
-        (fields = getAttributeFieldsRecursive(clazz.getSuperclass(),filter))
-                .putAll(getAttributeFieldsForClass(clazz,filter));
+        Map<String,Field> fields = getAttributeFieldsRecursive(clazz.getSuperclass(),filter);
+                fields.putAll(getAttributeFieldsForClass(clazz,filter));
         
         return fields;
         

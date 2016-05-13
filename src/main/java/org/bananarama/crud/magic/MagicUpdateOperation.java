@@ -16,6 +16,7 @@
 package org.bananarama.crud.magic;
 
 import com.googlecode.cqengine.query.option.QueryOptions;
+import java.io.IOException;
 import org.bananarama.crud.UpdateOperation;
 import java.util.stream.Stream;
 
@@ -48,7 +49,7 @@ public class MagicUpdateOperation<O,D,M extends ObjToDto<O,D>> implements Update
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
      updateDto.close();
     }
     

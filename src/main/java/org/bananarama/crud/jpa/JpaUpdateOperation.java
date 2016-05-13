@@ -19,6 +19,7 @@ import com.googlecode.cqengine.query.option.QueryOptions;
 import org.bananarama.crud.UpdateOperation;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  * 
@@ -26,15 +27,19 @@ import javax.persistence.EntityManager;
  */
 public class JpaUpdateOperation<T> extends AbstractJpaOperation <T> implements UpdateOperation<T>{
 
-    public JpaUpdateOperation(EntityManager em,Class<T> clazz) {
-        super(em,clazz);
+    public JpaUpdateOperation(EntityManagerFactory factory,Class<T> clazz) {
+        super(factory,clazz);
     }
 
     @Override
     public UpdateOperation<T> from(Stream<T> data) {
+        final EntityManager em = factory.createEntityManager();
+        
         em.getTransaction().begin();
         data.forEach(em::merge);
         em.getTransaction().commit();
+        
+        close(em);
         
         return this;
     }

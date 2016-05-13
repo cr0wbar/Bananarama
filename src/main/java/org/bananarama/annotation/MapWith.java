@@ -24,6 +24,7 @@ import org.bananarama.crud.magic.ObjToDto;
  * Used in Object<->DTO transfer operations
  * @author Guglielmo De Concini
  */
+@SuppressWarnings("rawtypes")
 @Retention(RetentionPolicy.RUNTIME)
 public @interface MapWith {
     

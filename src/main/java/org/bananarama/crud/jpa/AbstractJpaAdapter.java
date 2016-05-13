@@ -38,22 +38,22 @@ public class AbstractJpaAdapter implements Adapter<Object>{
     
     @Override
     public <T> JpaCreateOperation<T> create(Class<T> clazz) {
-        return new JpaCreateOperation<>(entityManagerFactory.createEntityManager(),clazz);
+        return new JpaCreateOperation<>(entityManagerFactory,clazz);
     }
 
     @Override
     public <T> JpaReadOperation<T> read(Class<T> clazz) {
-        return new JpaReadOperation<>(entityManagerFactory.createEntityManager(),clazz);
+        return new JpaReadOperation<>(entityManagerFactory,clazz);
     }
 
     @Override
     public <T> JpaUpdateOperation<T> update(Class<T> clazz) {
-        return new JpaUpdateOperation<>(entityManagerFactory.createEntityManager(),clazz);
+        return new JpaUpdateOperation<>(entityManagerFactory,clazz);
     }
 
     @Override
     public <T> JpaDeleteOperation<T> delete(Class<T> clazz) {
-        return new JpaDeleteOperation<>(entityManagerFactory.createEntityManager(),clazz);
+        return new JpaDeleteOperation<>(entityManagerFactory,clazz);
     }
     
     public EntityManager getEntityManager(){

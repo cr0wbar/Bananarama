@@ -117,4 +117,10 @@ public class MultipleIdColPojo {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+      return getId();
+    }
+    
 }

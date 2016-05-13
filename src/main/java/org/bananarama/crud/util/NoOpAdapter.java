@@ -16,6 +16,7 @@
 package org.bananarama.crud.util;
 
 import com.googlecode.cqengine.query.option.QueryOptions;
+import java.io.IOException;
 import org.bananarama.crud.Adapter;
 import org.bananarama.crud.CreateOperation;
 import org.bananarama.crud.DeleteOperation;
@@ -44,7 +45,7 @@ public class NoOpAdapter implements Adapter<Object>{
             }
 
             @Override
-            public void close() throws Exception {
+            public void close() throws IOException {
             }
         };
     }
@@ -83,7 +84,7 @@ public class NoOpAdapter implements Adapter<Object>{
             }
 
             @Override
-            public void close() throws Exception {
+            public void close() throws IOException {
             }
             
         };
@@ -104,7 +105,7 @@ public class NoOpAdapter implements Adapter<Object>{
             }
 
             @Override
-            public void close() throws Exception {
+            public void close() throws IOException {
             }
         };
     }
@@ -133,7 +134,7 @@ public class NoOpAdapter implements Adapter<Object>{
             }
 
             @Override
-            public void close() throws Exception {
+            public void close() throws IOException {
             }
         };
     }

@@ -105,6 +105,12 @@ public class Pojo {
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+      return getId();
+    }
+    
     
 }
 

@@ -24,4 +24,7 @@ public class BananaRamaException extends Exception{
     public BananaRamaException(String message){
         super(message);
     }
+    public BananaRamaException(String msg,Throwable ex){
+        super(msg,ex);
+    }
 }

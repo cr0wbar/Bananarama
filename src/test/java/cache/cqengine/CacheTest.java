@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
  *
  * @author Guglielmo De Concini
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked","rawtypes"})
 public class CacheTest {
 
     private final BananaRama bananarama = new BananaRama();

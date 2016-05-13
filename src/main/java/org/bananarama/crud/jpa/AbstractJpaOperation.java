@@ -15,8 +15,10 @@
  */
 package org.bananarama.crud.jpa;
 
+import java.io.IOException;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  * 
@@ -24,17 +26,15 @@ import javax.persistence.EntityManager;
  */
 public class AbstractJpaOperation<T> implements AutoCloseable{
 
-    protected final EntityManager em;
+    protected final EntityManagerFactory factory;
     protected final Class<T> clazz;
     
-    public AbstractJpaOperation(EntityManager em,Class<T> clazz){
-        this.em = em;
+    public AbstractJpaOperation(EntityManagerFactory factory,Class<T> clazz){
+        this.factory = factory;
         this.clazz = clazz;
     }
-
    
-    @Override
-    public void close() throws Exception {
+    protected void close(EntityManager em) {
         if(em.getTransaction().isActive()){
             em.getTransaction().rollback();
         }
@@ -43,14 +43,6 @@ public class AbstractJpaOperation<T> implements AutoCloseable{
         }
     }
     
-    
-    public void beginTransaction(){
-        em.getTransaction().begin();
-    }
-    
-    public void commitTransaction(){
-        em.getTransaction().commit();
-    }
     
      /**
      * @return the {@link Entity} name value or {@link Class#getSimpleName()} if
@@ -63,4 +55,10 @@ public class AbstractJpaOperation<T> implements AutoCloseable{
         
         return clazz.getSimpleName();
     }
+
+    @Override
+    public void close() throws IOException {
+        //NO-OP
+    }
+    
 }

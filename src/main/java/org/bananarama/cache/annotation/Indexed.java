@@ -37,5 +37,6 @@ public @interface Indexed {
      * in order to load the {@link Index} for the annotated field.
      * @return 
      */
+    @SuppressWarnings("rawtypes")
     Class<? extends IndexProvider> value() default HashIndexProvider.class;
 }

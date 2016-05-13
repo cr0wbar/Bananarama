@@ -15,10 +15,10 @@
  */
 package org.bananarama.crud.sql.column;
 
-import org.bananarama.crud.sql.column.SqlTypeConverter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import org.bananarama.exception.BananaRamaException;
 
 /**
  *
@@ -27,13 +27,23 @@ import java.sql.SQLException;
 public class TransparentTypeConverter implements SqlTypeConverter<Object>{
 
     @Override
-    public Object read(ResultSet rs, int index) throws SQLException {
-       return rs.getObject(index);
+    public Object read(ResultSet rs, int index) throws BananaRamaException {
+        try{
+            return rs.getObject(index);
+        }
+        catch(SQLException e){
+            throw new BananaRamaException("Failed to get object from result set",e);
+        }
     }
 
     @Override
-    public void write(PreparedStatement ps, int index, Object obj) throws SQLException {
-       ps.setObject(index, obj);
+    public void write(PreparedStatement ps, int index, Object obj) throws BananaRamaException {
+        try{
+            ps.setObject(index, obj);
+        }
+        catch(SQLException e){
+            throw new BananaRamaException("Failed to set object " + obj + " from result set",e);
+        }
     }
     
 }

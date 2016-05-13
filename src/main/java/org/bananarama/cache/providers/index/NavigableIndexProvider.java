@@ -31,7 +31,7 @@ public class NavigableIndexProvider<O> implements IndexProvider<O>{
      * index will be built
      * @return an instance of {@link NavigableIndex}
      */
-    @Override @SuppressWarnings("unchecked")
+    @Override @SuppressWarnings({"unchecked","rawtypes"})
     public Index<O> getIndex(Attribute<O,?> attribute) {
         if(Comparable.class.isAssignableFrom(attribute.getAttributeType()))
             return NavigableIndex.onAttribute((Attribute < O, ? extends Comparable>)attribute);

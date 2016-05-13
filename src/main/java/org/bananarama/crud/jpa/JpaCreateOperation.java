@@ -18,6 +18,7 @@ import com.googlecode.cqengine.query.option.QueryOptions;
 import org.bananarama.crud.CreateOperation;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  * 
@@ -25,17 +26,17 @@ import javax.persistence.EntityManager;
  */
 public class JpaCreateOperation<T> extends AbstractJpaOperation<T> implements CreateOperation<T>{
 
-    public JpaCreateOperation(EntityManager em,Class<T> clazz) {
-        super(em,clazz);
+    public JpaCreateOperation(EntityManagerFactory factory,Class<T> clazz) {
+        super(factory,clazz);
     }
     
     @Override
     public CreateOperation<T> from(Stream<T> data) {
-        
+        final EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
         data.forEach(em::persist);
         em.getTransaction().commit();
-        
+        close(em);
         return this;
     }
 

@@ -22,10 +22,10 @@ import static org.bananarama.crud.util.cqlogic.mappers.SqlTypeStringTranslator.*
  *
  * @author Guglielmo De Concini
  */
-public class GreaterThanMapper implements Mapper<GreaterThan>{
+public class GreaterThanMapper implements Mapper<GreaterThan<?,?>>{
 
     @Override
-    public String map(GreaterThan q) {
+    public String map(GreaterThan<?,?> q) {
         StringBuilder b = new StringBuilder();
         
         b.append(q.getAttributeName());

@@ -16,6 +16,7 @@
 package org.bananarama.crud.sql.accessor;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.Function;
 import java.lang.reflect.Method;
 /**
@@ -47,7 +48,7 @@ public class Getter extends FieldAccessor implements Function<Object,Object>{
         try{
             return handle.invoke(t);
         }
-        catch(Throwable ex){
+        catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException ex){
             throw new IllegalArgumentException("Can't invoke getter on field " + getName() + " on object " + t, ex);
         }
     }

@@ -23,10 +23,10 @@ import static org.bananarama.crud.util.cqlogic.mappers.SqlTypeStringTranslator.*
  *
  * @author Guglielmo De Concini
  */
-public class BetweenMapper implements Mapper<Between> {
+public class BetweenMapper implements Mapper<Between<?,?>> {
 
     @Override
-    public String map(Between q) {
+    public String map(Between<?,?> q) {
         StringBuilder b = new StringBuilder();
         
         b.append(q.getAttributeName());

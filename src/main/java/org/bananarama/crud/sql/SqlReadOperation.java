@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.bananarama.exception.FailedOperationException;
 
 
 /**
@@ -102,7 +103,7 @@ public class SqlReadOperation<T>extends AbstractSqlOperation<T> implements ReadO
         return fromKeys(keys,null);
     }
 
-    @Override
+    @Override @SuppressWarnings({"unchecked","rawtypes"})
     public Stream<T> fromKeys(List<?> keys,QueryOptions options) {
         List<Setter> setters = getSetters()
                 .stream()
@@ -116,9 +117,13 @@ public class SqlReadOperation<T>extends AbstractSqlOperation<T> implements ReadO
             List<SqlTypeConverter> readers = 
                     prepareConverters(setters);
             
-            for(int i =0; i < keys.size(); i++)
-                readers.get(i%readers.size()).write(ps,i+1 ,keys.get(i));
-            
+            try{
+                for(int i =0; i < keys.size(); i++)
+                    readers.get(i%readers.size()).write(ps,i+1 ,keys.get(i));
+            }
+            catch(Exception e){
+                throw new FailedOperationException(e);
+            }
         };
         
         final String singleMarker,whereClause;

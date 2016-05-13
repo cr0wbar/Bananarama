@@ -21,6 +21,7 @@ import org.bananarama.crud.DeleteOperation;
 import org.bananarama.crud.util.cqlogic.CQE2SQL;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 
 /**
  * 
@@ -30,8 +31,8 @@ public class JpaDeleteOperation<T> extends AbstractJpaOperation<T> implements De
 
     private final String DELETE;
     
-    public JpaDeleteOperation(EntityManager em,Class<T> clazz){
-        super(em,clazz);
+    public JpaDeleteOperation(EntityManagerFactory factory,Class<T> clazz){
+        super(factory,clazz);
         DELETE = "DELETE from " + clazz.getSimpleName();
     }
     
@@ -44,12 +45,15 @@ public class JpaDeleteOperation<T> extends AbstractJpaOperation<T> implements De
     @Override @SuppressWarnings("unchecked")
     public <Q> DeleteOperation<T> where(Q obj, QueryOptions options) {
         if(obj instanceof Query){
-            Query query = (Query) obj;
+            Query<?> query = (Query<?>) obj;
             String whereClause = CQE2SQL.convertCqQuery(query, options);
             
+            final EntityManager em = factory.createEntityManager();
             em.getTransaction().begin();
             em.createQuery(DELETE + whereClause).executeUpdate();
             em.getTransaction().commit();
+            
+            close(em);
         }
         else if(clazz.equals(obj.getClass()))
             return from(Stream.of((T)obj),options);
@@ -62,9 +66,11 @@ public class JpaDeleteOperation<T> extends AbstractJpaOperation<T> implements De
     @Override
     public DeleteOperation<T> from(Stream<T> data) {
         
+        final EntityManager em = factory.createEntityManager();
         em.getTransaction().begin();
         data.forEach(el-> em.remove(em.contains(el) ? el : em.merge(el)));
         em.getTransaction().commit();
+        close(em);
         
         return this;
     }

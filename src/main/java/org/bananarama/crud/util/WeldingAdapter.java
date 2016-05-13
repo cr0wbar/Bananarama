@@ -16,6 +16,7 @@
 package org.bananarama.crud.util;
 
 import com.googlecode.cqengine.query.option.QueryOptions;
+import java.io.IOException;
 import org.bananarama.crud.CreateOperation;
 import org.bananarama.crud.DeleteOperation;
 import org.bananarama.crud.ReadOperation;
@@ -64,7 +65,7 @@ public abstract class WeldingAdapter<S> implements Adapter<S>{
             }
 
             @Override
-            public void close() throws Exception {
+            public void close() throws IOException {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };
@@ -111,7 +112,7 @@ public abstract class WeldingAdapter<S> implements Adapter<S>{
             }
 
             @Override
-            public void close() throws Exception {
+            public void close() throws IOException {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };
@@ -140,7 +141,7 @@ public abstract class WeldingAdapter<S> implements Adapter<S>{
             }
 
             @Override
-            public void close() throws Exception {
+            public void close() throws IOException {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };
@@ -186,7 +187,7 @@ public abstract class WeldingAdapter<S> implements Adapter<S>{
             }
 
             @Override
-            public void close() throws Exception {
+            public void close() throws IOException {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
         };

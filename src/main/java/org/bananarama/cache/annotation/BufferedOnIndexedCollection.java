@@ -37,6 +37,7 @@ public @interface BufferedOnIndexedCollection {
      * {@link IndexedCollection} that will be associated with
      * the annotated entity
      */
+    @SuppressWarnings("rawtypes")
     Class<? extends IndexedCollectionProvider> provider() default ConcurrentIndexedCollectionProvider.class;
     
     /**

@@ -19,6 +19,7 @@ import org.bananarama.annotation.Banana;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
@@ -34,7 +35,7 @@ public class Item {
     
     private String description;
     
-    @ManyToMany(mappedBy="items")
+    @ManyToMany(mappedBy="items",fetch = FetchType.EAGER)
     private List<Simpleton> users;
 
     public Integer getId() {

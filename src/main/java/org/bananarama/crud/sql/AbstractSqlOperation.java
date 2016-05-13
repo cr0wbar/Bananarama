@@ -18,6 +18,7 @@ package org.bananarama.crud.sql;
 import org.bananarama.crud.sql.column.TransparentTypeConverter;
 import org.bananarama.crud.sql.column.SqlTypeConverter;
 import com.googlecode.cqengine.query.option.QueryOptions;
+import java.io.IOException;
 import org.bananarama.crud.sql.accessor.FieldAccessor;
 import org.bananarama.crud.sql.accessor.Getter;
 import org.bananarama.crud.sql.accessor.Setter;
@@ -45,6 +46,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.apache.log4j.Logger;
+import org.bananarama.exception.BananaRamaException;
 
 /**
  *
@@ -106,6 +108,7 @@ public abstract class AbstractSqlOperation <T> implements AutoCloseable{
         return setters;
     }
     
+    @SuppressWarnings("rawtypes")
     protected List<SqlTypeConverter> prepareConverters(List<? extends FieldAccessor> accessors){
         List<SqlTypeConverter> readers = new ArrayList<>(accessors.size());
         
@@ -125,6 +128,7 @@ public abstract class AbstractSqlOperation <T> implements AutoCloseable{
         return readers;
     }
     
+    @SuppressWarnings("rawtypes")
     protected Stream<T> readFromDb(String sql,List<Setter> accessors,PreparedStatementPreprocessor preprocessor){
         final List<SqlTypeConverter> typeConverters = prepareConverters(accessors);
         
@@ -156,7 +160,7 @@ public abstract class AbstractSqlOperation <T> implements AutoCloseable{
         }
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked","rawtypes"})
     protected int writeOnDb(Stream<T> data,String sql,List<Getter> accessors){
         final List<SqlTypeConverter> typeConverters = prepareConverters(accessors);
         int affected;
@@ -192,7 +196,7 @@ public abstract class AbstractSqlOperation <T> implements AutoCloseable{
         return affected;
     }
     
-    private static SQLException findCause(SQLException ex){
+    protected static SQLException findCause(SQLException ex){
         if(ex.getNextException() != null)
             return findCause(ex.getNextException());
         return ex;
@@ -241,7 +245,7 @@ public abstract class AbstractSqlOperation <T> implements AutoCloseable{
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
     }
     
     /**
@@ -249,6 +253,6 @@ public abstract class AbstractSqlOperation <T> implements AutoCloseable{
      */
     @FunctionalInterface  
     protected interface PreparedStatementPreprocessor {
-        void process(PreparedStatement t) throws Exception;
+        void process(PreparedStatement t) throws BananaRamaException;
     }
 }

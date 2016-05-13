@@ -61,6 +61,11 @@ public class Child extends Parent{
         }
         return false;
     }
+
+    @Override
+    public int hashCode() {
+        return getId();
+    }
     
     
 }

@@ -22,7 +22,7 @@ import com.googlecode.cqengine.query.Query;
  *
  * @author Guglielmo De Concini
  */
-public interface Mapper<T extends Query> {
+public interface Mapper<T extends Query<?>> {
     
     public String map(T q);
 }

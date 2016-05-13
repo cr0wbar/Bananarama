@@ -129,18 +129,22 @@ public class BananaRama implements Adapter<Object>{
         return getAdapter(clazz);
     }
     
+    @Override
     public <T> CreateOperation <T> create(Class<T> clazz){
         return getAdapterForClass(clazz).create(clazz);
     }
     
+    @Override
     public <T> ReadOperation <T> read(Class<T> clazz){
         return getAdapterForClass(clazz).read(clazz);
     }
     
+    @Override
     public <T> UpdateOperation<T> update(Class<T> clazz){
         return getAdapterForClass(clazz).update(clazz);
     }
     
+    @Override
     public <T> DeleteOperation<T> delete(Class<T> clazz){
         return getAdapterForClass(clazz).delete(clazz);
     }

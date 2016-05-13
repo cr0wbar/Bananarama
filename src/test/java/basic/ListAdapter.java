@@ -17,6 +17,7 @@ package basic;
 
 import com.googlecode.cqengine.query.Query;
 import com.googlecode.cqengine.query.option.QueryOptions;
+import java.io.IOException;
 import org.bananarama.crud.CreateOperation;
 import org.bananarama.crud.DeleteOperation;
 import org.bananarama.crud.ReadOperation;
@@ -30,12 +31,12 @@ import java.util.stream.Stream;
  *
  * @author Guglielmo De Concini
  */
-public class ListAdapter implements Adapter<Entry>{
+public class ListAdapter implements Adapter<Object>{
 
-    private List<Entry> backend = new ArrayList<>();
+    private final List<Object> backend = new ArrayList<>();
 
     @Override
-    public <T extends Entry> CreateOperation<T> create(Class<T> clazz) {
+    public <T> CreateOperation<T> create(Class<T> clazz) {
        return new CreateOperation<T>() {
            @Override
            public CreateOperation<T> from(Stream<T> data) {
@@ -49,14 +50,14 @@ public class ListAdapter implements Adapter<Entry>{
            }
 
            @Override
-           public void close() throws Exception {
+           public void close() throws IOException {
                
            }
        };
     }
 
     @Override
-    public <T extends Entry> ReadOperation<T> read(Class<T> clazz) {
+    public <T> ReadOperation<T> read(Class<T> clazz) {
        return new ReadOperation<T>() {
            @Override @SuppressWarnings("unchecked")
            public Stream<T> all() {
@@ -89,14 +90,14 @@ public class ListAdapter implements Adapter<Entry>{
            }
 
            @Override
-           public void close() throws Exception {
+           public void close() throws IOException {
                
            }
        };
     }
 
     @Override
-    public <T extends Entry> UpdateOperation<T> update(Class<T> clazz) {
+    public <T> UpdateOperation<T> update(Class<T> clazz) {
        return new UpdateOperation<T>() {
 
            @Override
@@ -113,21 +114,21 @@ public class ListAdapter implements Adapter<Entry>{
            }
 
            @Override
-           public void close() throws Exception {
+           public void close() throws IOException {
                
            }
        };
     }
 
     @Override
-    public <T extends Entry> DeleteOperation<T> delete(Class<T> clazz) {
+    public <T> DeleteOperation<T> delete(Class<T> clazz) {
        return new DeleteOperation<T>() {
            @Override
            public <Q> DeleteOperation<T> where(Q whereClaus) {
                throw new UnsupportedOperationException("Not supported yet.");
            }
 
-           @Override
+           @Override @SuppressWarnings("unchecked")
            public <Q> DeleteOperation<T> where(Q whereClaus, QueryOptions options) {
                if(whereClaus instanceof Query){
                    Query<T> query = (Query<T>)whereClaus;
@@ -149,7 +150,7 @@ public class ListAdapter implements Adapter<Entry>{
            }
 
            @Override
-           public void close() throws Exception {
+           public void close() throws IOException {
                
            }
        };

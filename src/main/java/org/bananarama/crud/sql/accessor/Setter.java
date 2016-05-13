@@ -16,6 +16,7 @@
 package org.bananarama.crud.sql.accessor;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.function.BiConsumer;
 import java.lang.reflect.Method;
 import org.bananarama.crud.sql.annotation.Column;
@@ -49,7 +50,7 @@ public class Setter extends FieldAccessor implements BiConsumer<Object, Object>{
         try{
             handle.invoke(obj,val);
         }
-        catch(Throwable ex){
+        catch(IllegalAccessException | IllegalArgumentException | InvocationTargetException ex){
             throw new IllegalArgumentException("Can't invoke setter on field " + getName() + " with argument " + val, ex);
         }
     }

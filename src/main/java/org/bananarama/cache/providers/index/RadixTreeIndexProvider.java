@@ -27,11 +27,13 @@ public class RadixTreeIndexProvider<O> implements IndexProvider<O>{
 
         /**
      * 
+     * @param attribute
      * @param attr the attribute against which the
      * index will be built
      * @return an instance of {@link RadixTreeIndex}
      */
     @SuppressWarnings("unchecked")
+    @Override
     public Index<O> getIndex(Attribute<O,?> attribute) {
         if(CharSequence.class.isAssignableFrom(attribute.getAttributeType()))
             return RadixTreeIndex.onAttribute((Attribute < O, ? extends CharSequence>)attribute);

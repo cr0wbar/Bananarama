@@ -16,6 +16,7 @@
 package org.bananarama.crud.magic;
 
 import com.googlecode.cqengine.query.option.QueryOptions;
+import java.io.IOException;
 import org.bananarama.crud.ReadOperation;
 import java.util.List;
 import java.util.stream.Stream;
@@ -70,7 +71,7 @@ public class MagicReadOperation<O,D,M extends ObjToDto<O,D>> implements ReadOper
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() throws IOException {
         readDto.close();
     }
     

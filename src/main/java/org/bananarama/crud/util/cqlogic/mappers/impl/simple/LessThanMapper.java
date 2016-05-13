@@ -22,10 +22,10 @@ import static org.bananarama.crud.util.cqlogic.mappers.SqlTypeStringTranslator.*
  *
  * @author Guglielmo De Concini
  */
-public class LessThanMapper implements Mapper<LessThan>{
+public class LessThanMapper implements Mapper<LessThan<?,?>>{
 
     @Override
-    public String map(LessThan q) {
+    public String map(LessThan<?,?> q) {
         StringBuilder b = new StringBuilder();
         
         b.append(q.getAttributeName());

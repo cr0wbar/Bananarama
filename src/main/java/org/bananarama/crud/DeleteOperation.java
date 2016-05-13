@@ -22,7 +22,7 @@ import java.util.stream.Stream;
  *
  * @author Guglielmo De Concini
  */
-public interface DeleteOperation <T> extends AutoCloseable{
+public interface DeleteOperation <T> extends BasicOperation{
     /**
      * Delete all objects satisfying the given condition
      * @param <Q> the query type

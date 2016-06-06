@@ -66,44 +66,30 @@ public class NoOpAdapter implements Adapter<Object>{
     
 }
 ```
-Then we create the class that reflects the data on the persistency layer.
+Then we create the class that reflects the data on the persistency layer
 ```java
 @Banana(adapter = NoOpAdapter.class)
 public class Entry {
-    private final String key;
-    private String val;
+    private String id;
     
-    public Entry(String key,String val){
-        this.val = val;
-        this.key = key;
-    }
-    
-    public String getValue(){
-        return val;
+    public String getId(){
+        return id;
     }
 
-    public String getKey(){
-        return key;
-    }
-
-    public String getVal() {
-        return val;
-    }
-
-    public void setVal(String val) {
-        this.val = val;
+    public void setId(String id) {
+        this.id = id;
     }
     
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Entry)
-            return  key.equals(((Entry)obj).key);
+            return  id.equals(((Entry)obj).id);
        return false;
     }
 
     @Override
     public int hashCode() {
-       return val.hashCode();
+       return id.hashCode();
     }
     
     

@@ -20,7 +20,7 @@ public class HasMapper implements Mapper<Has<?,?>> {
     */
     @Override
     public String map(Has q) {
-        return String.format("%s is null",q.getAttributeName());
+        return String.format("%s is not null",q.getAttributeName());
     }
 
 }

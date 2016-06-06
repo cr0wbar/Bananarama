@@ -58,13 +58,15 @@ public class CacheDeleteOperation<T> extends AbstractCacheOperation<T> implement
             getBackingAdapter(clazz).delete(clazz)
                     .where(obj,options);
             
-            Collection<T> complement = StreamSupport
-                    .stream(coll.retrieve(not(query)).spliterator(),false).collect(Collectors.toList());
-            
-            coll.clear();
-            coll.addAll(complement);
-            
-            return this;
+            try(Stream<T> stream = StreamSupport
+                    .stream(coll.retrieve(not(query)).spliterator(),false)){
+                Collection<T> complement = stream.collect(Collectors.toList());
+                
+                coll.clear();
+                coll.addAll(complement);
+                
+                return this;
+            }
         }
         
         throw new IllegalArgumentException(getClass().getName()

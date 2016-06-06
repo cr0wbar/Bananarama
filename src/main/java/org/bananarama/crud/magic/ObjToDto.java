@@ -20,9 +20,29 @@ package org.bananarama.crud.magic;
  * @author Guglielmo De Concini
  */
 public interface ObjToDto<O,D> {
+    /**
+     * 
+     * @param obj The object to transform in DTO
+     * @return the DTO
+     */
     D toDto(O obj);
+    
+    /**
+     * 
+     * @param dto The dto to Transform in Object
+     * @return 
+     */
     O toObj(D dto);
     
+    /**
+     * Returns the .class for the DTO
+     * @return the DTO type
+     */
     Class<D> dtoType();
+    
+    /**
+     * Returns the .class for the Object
+     * @return the Object type
+     */
     Class<O> objType();
 }

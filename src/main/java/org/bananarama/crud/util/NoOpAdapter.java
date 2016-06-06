@@ -15,15 +15,15 @@
  */
 package org.bananarama.crud.util;
 
-import com.googlecode.cqengine.query.option.QueryOptions;
-import java.io.IOException;
 import org.bananarama.crud.Adapter;
 import org.bananarama.crud.CreateOperation;
 import org.bananarama.crud.DeleteOperation;
 import org.bananarama.crud.ReadOperation;
 import org.bananarama.crud.UpdateOperation;
-import java.util.List;
-import java.util.stream.Stream;
+import org.bananarama.crud.noop.NoOpCreateOperation;
+import org.bananarama.crud.noop.NoOpDeleteOperation;
+import org.bananarama.crud.noop.NoOpReadOperation;
+import org.bananarama.crud.noop.NoOpUpdateOperation;
 
 /**
  * NoOp Adapter. Useful for short-circuiting in an adapter chain
@@ -32,111 +32,23 @@ import java.util.stream.Stream;
 public class NoOpAdapter implements Adapter<Object>{
     
     @Override
-    public <T> CreateOperation<T> create(Class<T> clazz) {
-        return new CreateOperation<T>() {
-            @Override
-            public CreateOperation<T> from(Stream<T> data) {
-                return this;
-            }
-            
-            @Override
-            public CreateOperation<T> from(Stream<T> data, QueryOptions options) {
-                return this;
-            }
-
-            @Override
-            public void close() throws IOException {
-            }
-        };
+    public <T> NoOpCreateOperation<T> create(Class<T> clazz) {
+      return new NoOpCreateOperation<>(clazz);
     }
     
     @Override
-    public <T> ReadOperation<T> read(Class<T> clazz) {
-        return new ReadOperation<T>() {
-            @Override
-            public Stream<T> all() {
-                return Stream.empty();
-            }
-            
-            @Override
-            public Stream<T> all(QueryOptions options) {
-                return Stream.empty();
-            }
-            
-            @Override
-            public <Q> Stream<T> where(Q whereClause) {
-                return Stream.empty();
-            }
-            
-            @Override
-            public <Q> Stream<T> where(Q whereClause, QueryOptions options) {
-                return Stream.empty();
-            }
-            
-            @Override
-            public Stream<T> fromKeys(List<?> keys) {
-                return Stream.empty();
-            }
-            
-            @Override
-            public Stream<T> fromKeys(List<?> keys, QueryOptions options) {
-                return Stream.empty();
-            }
-
-            @Override
-            public void close() throws IOException {
-            }
-            
-        };
+    public <T> NoOpReadOperation<T> read(Class<T> clazz) {
+        return new NoOpReadOperation<>();
     }
     
     @Override
-    public <T> UpdateOperation<T> update(Class<T> clazz) {
-        return new UpdateOperation<T>() {
-            
-            @Override
-            public UpdateOperation<T> from(Stream<T> data) {
-                return this;
-            }
-            
-            @Override
-            public UpdateOperation<T> from(Stream<T> data, QueryOptions options) {
-                return this;
-            }
-
-            @Override
-            public void close() throws IOException {
-            }
-        };
+    public <T> NoOpUpdateOperation<T> update(Class<T> clazz) {
+      return new NoOpUpdateOperation<>();
     }
     
     @Override
-    public <T> DeleteOperation<T> delete(Class<T> clazz) {
-        return new DeleteOperation<T>() {
-            @Override
-            public <Q> DeleteOperation<T> where(Q whereClaus) {
-                return this;
-            }
-            
-            @Override
-            public <Q> DeleteOperation<T> where(Q whereClaus, QueryOptions options) {
-                return this;
-            }
-            
-            @Override
-            public DeleteOperation<T> from(Stream<T> data) {
-                return this;
-            }
-            
-            @Override
-            public DeleteOperation<T> from(Stream<T> data, QueryOptions options) {
-                return this;
-            }
-
-            @Override
-            public void close() throws IOException {
-            }
-        };
+    public <T> NoOpDeleteOperation<T> delete(Class<T> clazz) {
+        return new NoOpDeleteOperation<>();
     }
     
 }

@@ -6,13 +6,16 @@
 package magic;
 
 import java.time.LocalDate;
+import org.bananarama.annotation.Banana;
 import org.bananarama.annotation.MapWith;
+import org.bananarama.crud.magic.MagicAdapter;
 
 /**
  *
  * @author Guglielmo De Concini
  */
 @MapWith(SimpleMapper.class)
+@Banana(adapter = MagicAdapter.class)
 public class SimpleObj {
     private int id;
     private LocalDate date;

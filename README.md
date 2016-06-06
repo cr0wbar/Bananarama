@@ -41,116 +41,28 @@ Integration of entities in BananaRama is done in two steps.
 First we need to create a class which implements the  `Adapter` interface. This will be the class that will actually manage the entities, either by accessing the persistency layer or calling other adapters. 
 
 ```
-public final class NoOpAdapter implements Adapter<Object>{
+public class NoOpAdapter implements Adapter<Object>{
     //A really simple adapter which does nothing :)
-    
     @Override
     public <T> CreateOperation<T> create(Class<T> clazz) {
-        return new CreateOperation<T>() {
-            @Override
-            public CreateOperation<T> from(Stream<T> data) {
-                return this;
-            }
-            
-            @Override
-            public CreateOperation<T> from(Stream<T> data, QueryOptions options) {
-                return this;
-            }
-
-            @Override
-            public void close() throws Exception {
-            }
-        };
+      return new NoOpCreateOperation();
     }
     
     @Override
     public <T> ReadOperation<T> read(Class<T> clazz) {
-        return new ReadOperation<T>() {
-            @Override
-            public Stream<T> all() {
-                return Stream.empty();
-            }
-            
-            @Override
-            public Stream<T> all(QueryOptions options) {
-                return Stream.empty();
-            }
-            
-            @Override
-            public <Q> Stream<T> where(Q whereClause) {
-                return Stream.empty();
-            }
-            
-            @Override
-            public <Q> Stream<T> where(Q whereClause, QueryOptions options) {
-                return Stream.empty();
-            }
-            
-            @Override
-            public Stream<T> fromKeys(List<?> keys) {
-                return Stream.empty();
-            }
-            
-            @Override
-            public Stream<T> fromKeys(List<?> keys, QueryOptions options) {
-                return Stream.empty();
-            }
-
-            @Override
-            public void close() throws Exception {
-            }
-            
-        };
+        return new NoOpReadOperation<>();
     }
     
     @Override
     public <T> UpdateOperation<T> update(Class<T> clazz) {
-        return new UpdateOperation<T>() {
-            
-            @Override
-            public UpdateOperation<T> from(Stream<T> data) {
-                return this;
-            }
-            
-            @Override
-            public UpdateOperation<T> from(Stream<T> data, QueryOptions options) {
-                return this;
-            }
-
-            @Override
-            public void close() throws Exception {
-            }
-        };
+      return new NoOpUpdateOperation<>();
     }
     
     @Override
     public <T> DeleteOperation<T> delete(Class<T> clazz) {
-        return new DeleteOperation<T>() {
-            @Override
-            public <Q> DeleteOperation<T> where(Q whereClaus) {
-                return this;
-            }
-            
-            @Override
-            public <Q> DeleteOperation<T> where(Q whereClaus, QueryOptions options) {
-                return this;
-            }
-            
-            @Override
-            public DeleteOperation<T> from(Stream<T> data) {
-                return this;
-            }
-            
-            @Override
-            public DeleteOperation<T> from(Stream<T> data, QueryOptions options) {
-                return this;
-            }
-
-            @Override
-            public void close() throws Exception {
-            }
-        };
+        return new NoOpDeleteOperation<>();
     }
+    
 }
 ```
 The `@Banana` annotation  takes care of redirecting BananaRama to the
@@ -256,6 +168,121 @@ All annotation in the previous example are part of BananaRama. Here is a quick o
 * `@Column` and `@Table` work very similarly to the the equivalent JPA annotations, with some extra features explained in the javadoc.
 * `@Convert` and `@ConvertWith` provide the adapter with custom SQL types translators. The first is for defining global translators for the annotated class, the latter is for setting a translator for a specific field and overrides any global translator.  
 
+### CqEngine
+BananaRama also supports a simple caching mechanism which relies on the awesome [CQEngine](https://github.com/npgall/cqengine).
+Entities can be loaded on an `IndexedCollection`, as an intermediate layer, by using the `BufferedOnIndexedCollection` annotation as follows.
+
+```java
+@BufferedOnIndexedCollection
+@Banana(adapter = FooAdapter.class)
+public class CacheEntry extends Entry{
+    private final String key;
+    private String val;
+    
+    public String getValue(){
+        return val;
+    }
+
+    public String getKey(){
+        return key;
+    }
+
+    public String getVal() {
+        return val;
+    }
+    
+    public void setVal(String val) {
+        this.val = val;
+    }
+
+    @Indexed
+    public static final Attribute<CacheEntry,String> KEY = new SimpleAttribute<CacheEntry, String>("key"){
+        @Override
+        public String getValue(CacheEntry o, QueryOptions qo) {
+            return o.getKey();
+        }
+    };
+    
+    @Indexed(NavigableIndexProvider.class)
+    public static final Attribute<CacheEntry,String> VAL = new SimpleAttribute<CacheEntry, String>("val"){
+        @Override
+        public String getValue(CacheEntry o, QueryOptions qo) {
+            return o.getVal();
+        }
+    };
+}
+```
+The key annotations in the previous example are
+
+*  `@BufferedOnIndexedCollection`, which is used to notify BananaRama that all entities of the annotated type have to be loaded on a `IndexedCollection` upon the first reading operation. All modifications (deletion, update, creation) will be performed on both the collection and the underlying layer using the provided adapter. By default all entities are stored in a `ConcurrentIndexedCollection` but a custom colllection provider may be provided. BananaRama has the following providers for `IndexedCollection` implementaions:
+
+	*  ConcurrentIndexedCollection
+	*  ObjectLockingIndexedCollection
+
+* `Indexed`, which tells BananaRama that an index should be created on the annotated CQEngine attribute  (see CQEngine documentation for details regarding attributes and indexes).  By default a `HashIndex` will be created, but a custom `IndexProvider` may be supplied in order to use any other available index. BananaRama has default providers for
+	* HashIndex
+	* NavigableIndex
+	* RadixTreeIndex
+	* DiskIndex
+
+### Magic (DTO to Object and viceversa)
+Programmers dealing with serialized entities might be interested in using the DTO pattern. BananaRama provides an automatic translation mechanism in order to go from DTO to Object and vice-versa. The *Magic* adapter is what implements such translation mechanism. As a simple example, let's assume we have the following DTO, which is managed by the `FooAdapter` adapter.
+
+```java
+@Banana(adapter = FooAdapter.class)
+public class SimpleDto {
+    private int id;
+    private String date;
+    
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+    
+}
+```
+
+and the complete object, with a `LocalDate` field which we want to obtain by parsing the `date` field of the DTO
+
+```java
+@MapWith(SimpleMapper.class)
+@Banana(adapter = MagicAdapter.class)
+public class SimpleObj {
+    private int id;
+    private LocalDate date;
+    
+    public int getId() {
+        return id;
+    }
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    public LocalDate getDate() {
+        return date;
+    }
+    
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+}
+```   
+
+The `@MapWith` annotation  tells the `MagicAdapter` that this object doesn't actually exists in the persistency layer, but it is an abstraction of its DTO counterpart. As a value accepts a class which implements the `ObjToDto<O,D>` interface. This class is then instantiated and used by the `MagicAdapter` to convert objects in DTOs and viceversa, and also to retrieve the DTO class in order to access the persistency layer. As such, this annotation **is a requirement** when using the `MagicAdapter`. A library which provides a very powerful set of tools when dealing with the DTO pattern is [MapStruct](http://mapstruct.org/).
+
 ### JPA
 Implement a custom adapter in order to access a specific persistency unit.
 ```java
@@ -267,11 +294,5 @@ public class MyJpaAdapter extends AbstractJpaAdapter{
 
 }
 ```
-Then simply annotate with `Banana( adapter = MyJpaAdapter.class)` any class annotated with `@Entity` and other annotations which are part of JPA and use it with BananaRama.
-
-### CqEngine
-TODO
-### Magic (DTO to Object and viceversa)
-TODO
-
+Then simply annotate with `@Banana( adapter = MyJpaAdapter.class)` any class annotated with `@Entity` and other annotations which are part of JPA and use it with BananaRama.
 

@@ -40,7 +40,7 @@ BananaRama natively supports the following frameworks/persistency layers
 Integration of entities in BananaRama is done in two steps.
 First we need to create a class which implements the  `Adapter` interface. This will be the class that will actually manage the entities, either by accessing the persistency layer or calling other adapters. 
 
-```
+```java
 public class NoOpAdapter implements Adapter<Object>{
     //A really simple adapter which does nothing :)
     @Override

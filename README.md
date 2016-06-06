@@ -35,7 +35,7 @@ BananaRama natively supports the following frameworks/persistency layers
 * [JDBC] (#jdbc) - fast POJOs to SQL and viceversa.
 * [JPA](#jpa) - Manage JPA entities with BananaRama.
 * [CQEngine](#cqengine) - Integrated support for CQEngine indexed collection on top of other persistency layers or standalone.
-* [Magic](#magic) - Easy to use implementation of the DTO pattern.
+* [Magic](#magic-dto-to-object-and-viceversa) - Easy to use implementation of the DTO pattern.
 ## Simplest Example
 Integration of entities in BananaRama is done in two steps.
 First we need to create a class which implements the  `Adapter` interface. This will be the class that will actually manage the entities, either by accessing the persistency layer or calling other adapters. 

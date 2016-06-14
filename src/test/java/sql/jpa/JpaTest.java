@@ -27,8 +27,6 @@ import java.util.stream.Stream;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -40,7 +38,8 @@ public class JpaTest {
     
     @BeforeClass
     public static void setUpClass() {
-        System.setProperty("org.jboss.logging.provider", "slf4j"); // The JBoss logging discovery process ius not so reliable...
+        // Force jboss-logging to use SLF4J; it is not picked up by the autodiscovery since we do not have Logback in our classpath
+        System.setProperty("org.jboss.logging.provider", "slf4j"); 
     }
     
     public void checkCount(int n,ReadOperation<Simpleton> read){

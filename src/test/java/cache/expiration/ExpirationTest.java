@@ -18,15 +18,12 @@ package cache.expiration;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.apache.log4j.BasicConfigurator;
 import org.bananarama.BananaRama;
 import org.bananarama.cache.IndexedCollectionAdapter;
 import org.bananarama.cache.annotation.BufferedOnIndexedCollection;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -36,16 +33,6 @@ import org.junit.Test;
 public class ExpirationTest {
     
     public ExpirationTest() {
-    }
-    
-    @BeforeClass
-    public static void setUpClass() {
-        BasicConfigurator.configure();
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-        BasicConfigurator.resetConfiguration();
     }
     
     @Before

@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.apache.log4j.BasicConfigurator;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -43,13 +42,11 @@ public class SqlTest {
 
     @BeforeClass
     public static void prepare(){
-        BasicConfigurator.configure();
         adap = bananarama.using(H2Adapter.class);
     }
     
     @AfterClass
     public static void destroy() throws IOException{
-        BasicConfigurator.resetConfiguration();
         adap.close();
     }
     

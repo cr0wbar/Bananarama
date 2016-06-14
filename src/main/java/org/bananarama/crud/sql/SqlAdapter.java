@@ -17,8 +17,9 @@ package org.bananarama.crud.sql;
 
 import org.bananarama.crud.Adapter;
 import javax.sql.DataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -26,7 +27,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class SqlAdapter implements Adapter<Object> {
 
-    private static final Logger log = Logger.getLogger(SqlAdapter.class);
+    private static final Logger log = LoggerFactory.getLogger(SqlAdapter.class);
     protected final DataSource dataSource;
 
     public SqlAdapter(DataSource dataSource) {

@@ -45,15 +45,16 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
-import org.apache.log4j.Logger;
 import org.bananarama.exception.BananaRamaException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Guglielmo De Concini
  */
 public abstract class AbstractSqlOperation <T> implements AutoCloseable{
-    protected final Logger log = Logger.getLogger(getClass());
+    protected final Logger log = LoggerFactory.getLogger(getClass());
     protected final Class<T> clazz;
     protected final DataSource dataSource;
     protected String tableName;

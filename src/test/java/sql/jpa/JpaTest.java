@@ -24,13 +24,11 @@ import org.bananarama.crud.UpdateOperation;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -42,15 +40,9 @@ public class JpaTest {
     
     @BeforeClass
     public static void setUpClass() {
-        BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.INFO);//JPA is very verbose...
+        System.setProperty("org.jboss.logging.provider", "slf4j"); // The JBoss logging discovery process ius not so reliable...
     }
     
-    @AfterClass
-    public static void tearDownClass() {
-        BasicConfigurator.resetConfiguration();
-    }
-
     public void checkCount(int n,ReadOperation<Simpleton> read){
         assertEquals(n,read.all().count());
         assertEquals(n,bananarama.read(Simpleton.class).all().count());

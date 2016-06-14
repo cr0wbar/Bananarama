@@ -17,20 +17,12 @@ package org.bananarama.cache;
 
 import org.bananarama.cache.annotation.Indexed;
 import org.bananarama.cache.annotation.BufferedOnIndexedCollection;
-import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.googlecode.cqengine.IndexedCollection;
 import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.index.Index;
-import com.googlecode.cqengine.query.Query;
-import static com.googlecode.cqengine.query.QueryFactory.*;
-import com.googlecode.cqengine.resultset.ResultSet;
-import com.googlecode.cqengine.query.option.QueryOptions;
-import java.io.IOException;
 import org.bananarama.BananaRama;
-import org.bananarama.annotation.Banana;
 import org.bananarama.concurrency.StripedLock;
 import org.bananarama.crud.CreateOperation;
 import org.bananarama.crud.DeleteOperation;
@@ -42,19 +34,18 @@ import org.bananarama.crud.sql.accessor.FieldAccessor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.concurrent.locks.Lock;
 import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import net.sf.ehcache.config.Configuration;
 import net.sf.ehcache.config.ConfigurationFactory;
 import net.sf.ehcache.config.PersistenceConfiguration;
-import org.apache.log4j.Logger;
 import org.bananarama.annotation.BananaRamaAdapter;
 import org.bananarama.cache.providers.collection.IndexedCollectionProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -66,7 +57,7 @@ public final class IndexedCollectionAdapter implements Adapter<Object> {
     private static final String CACHE_NAME = "bananarama:indexed:buffers";
     private final CacheManager cacheManager;
     private final Ehcache cache;
-    private final static Logger log = Logger.getLogger(IndexedCollectionAdapter.class);
+    private final static Logger log = LoggerFactory.getLogger(IndexedCollectionAdapter.class);
     private final StripedLock slock = new StripedLock(64);
     private static final int ATTRIBUTE_MODIFIERS =  Modifier.PUBLIC
             | Modifier.FINAL

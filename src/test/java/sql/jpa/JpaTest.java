@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
 
 /**
  *
@@ -35,12 +34,6 @@ import org.junit.BeforeClass;
 public class JpaTest {
     private final static  BananaRama bananarama = new BananaRama();
     
-    
-    @BeforeClass
-    public static void setUpClass() {
-        // Force jboss-logging to use SLF4J; it is not picked up by the autodiscovery since we do not have Logback in our classpath
-        System.setProperty("org.jboss.logging.provider", "slf4j"); 
-    }
     
     public void checkCount(int n,ReadOperation<Simpleton> read){
         assertEquals(n,read.all().count());

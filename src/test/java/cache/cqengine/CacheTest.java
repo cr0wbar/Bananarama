@@ -32,7 +32,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import org.apache.log4j.BasicConfigurator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,17 +45,7 @@ import static org.junit.Assert.*;
 public class CacheTest {
 
     private final BananaRama bananarama = new BananaRama();
-    
-    @BeforeClass
-    public static void setUpClass() {
-        BasicConfigurator.configure();
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-        BasicConfigurator.resetConfiguration();
-    }
-    
+        
     public void checkCount(int n,ReadOperation<?> read){
         assertEquals(n, read.all().count());
         assertEquals(n, bananarama.read(CacheEntry.class).all().count());

@@ -76,13 +76,9 @@ public class BananaRama implements Adapter<Object>{
             return getAdapter(customAdapters.get(clazz));
         }
         
-        if(!clazz.isAnnotationPresent(Banana.class))    {
-            if(clazz.getName().equals("com.google.cloud.datastore.Entity")) {
-                System.out.println("ASDASDSADSADA");
-            }
+        if(!clazz.isAnnotationPresent(Banana.class)) {
             throw new IllegalArgumentException(clazz.getName() + " is not annotated with " + Banana.class.getName());
-        }
-            
+        }           
         
         // If type was annotated for buffering, we retrieve the IndexedCollectionAdapter
         if(clazz.isAnnotationPresent(BufferedOnIndexedCollection.class))

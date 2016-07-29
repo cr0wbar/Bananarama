@@ -31,7 +31,7 @@ public class MemoryAdapter implements Adapter<Object>{
 
             @Override
             public CreateOperation<T> from(Stream<T> data, QueryOptions options) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
@@ -49,27 +49,27 @@ public class MemoryAdapter implements Adapter<Object>{
 
             @Override
             public Stream<T> all(QueryOptions options) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public <Q> Stream<T> where(Q whereClause) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public <Q> Stream<T> where(Q whereClause, QueryOptions options) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public Stream<T> fromKeys(List<?> keys) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
             public Stream<T> fromKeys(List<?> keys, QueryOptions options) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");
             }
 
             @Override
@@ -79,14 +79,11 @@ public class MemoryAdapter implements Adapter<Object>{
 
     @Override
     public <T> UpdateOperation<T> update(Class<T> clazz) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <T> DeleteOperation<T> delete(Class<T> clazz) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
-    
-    
+        throw new UnsupportedOperationException("Not supported yet.");
+    }    
 }

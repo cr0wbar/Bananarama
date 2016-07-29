@@ -39,22 +39,20 @@ public class ForceCustomAdaptersTest {
         
         // Verify all the assumptions
         
-        // SimpleObj is babanaed with a MAgicAdapter that map using SimpleMapper
-        Assert.assertEquals(
-               SimpleMapper.class, 
-               Optional.ofNullable(SimpleObj.class.getDeclaredAnnotation(MapWith.class))
+        // SimpleObj is babanaed with a MagicAdapter that map using SimpleMapper
+        Class declaredMapWith = Optional.ofNullable(SimpleObj.class.getDeclaredAnnotation(MapWith.class))
                     .map(MapWith::value)
-                    .get());
+                    .get();
+        Assert.assertEquals(SimpleMapper.class, declaredMapWith);
 
         // SimpleMapper map to SimpleDto
         Assert.assertNotNull(SimpleMapper.class.getDeclaredMethod("toObj", SimpleDto.class));
        
         // SimpleDto is bananaed using a ListAdapter
-        Assert.assertEquals(
-               ListAdapter.class, 
-               Optional.ofNullable(SimpleDto.class.getDeclaredAnnotation(Banana.class))
+        Class declaredAdapter = Optional.ofNullable(SimpleDto.class.getDeclaredAnnotation(Banana.class))
                     .map(Banana::adapter)
-                    .get());
+                    .get();
+        Assert.assertEquals(ListAdapter.class, declaredAdapter);
        
         Assert.assertEquals(0, MemoryAdapter.datastore.size());
      

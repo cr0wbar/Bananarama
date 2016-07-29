@@ -35,11 +35,17 @@ public class ListAdapter implements Adapter<Object>{
 
     private final List<Object> backend = new ArrayList<>();
 
+    public ListAdapter() {
+        System.out.println("uallaualla");
+    }
+    
+    
+    
     @Override
     public <T> CreateOperation<T> create(Class<T> clazz) {
        return new CreateOperation<T>() {
            @Override
-           public CreateOperation<T> from(Stream<T> data) {
+           public CreateOperation<T> from(Stream<T> data) {               
                data.forEach(backend::add);
                return this;
            }

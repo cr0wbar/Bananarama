@@ -42,10 +42,18 @@ public class BananaRama implements Adapter<Object>{
     
     private final StripedLock slock;
     private final Map<Class<?>, Adapter<?>> adapters;
-    private static final Map<Class<?>, Class<? extends Adapter>> customAdapters = new ConcurrentHashMap<>();
+    private final Map<Class<?>, Class<? extends Adapter>> customAdapters = new ConcurrentHashMap<>();
     
-    public static void registerAdapter(Class<? extends Adapter> adapter, Class forEntiy) {
+    /**
+     * Map the specified {@link Adapter} for a given entity. 
+     * This method is usefull to allow final class from external libraries to be managed by BananaRama
+     * @param adapter
+     * @param forEntiy 
+     * @return this instance
+     */
+    public BananaRama registerAdapter(Class<? extends Adapter> adapter, Class forEntiy) {
         customAdapters.put(forEntiy, adapter);
+        return this;
     }
     
     public BananaRama(){

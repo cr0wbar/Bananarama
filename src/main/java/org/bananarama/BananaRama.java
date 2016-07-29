@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bananarama.annotation.Banana;
 import org.bananarama.annotation.BananaRamaAdapter;
@@ -41,6 +42,11 @@ public class BananaRama implements Adapter<Object>{
     
     private final StripedLock slock;
     private final Map<Class<?>, Adapter<?>> adapters;
+    private static final Map<Class<?>, Class<? extends Adapter>> customAdapters = new ConcurrentHashMap<>();
+    
+    public static void registerAdapter(Class<? extends Adapter> adapter, Class forEntiy) {
+        customAdapters.put(forEntiy, adapter);
+    }
     
     public BananaRama(){
         this(32);
@@ -57,8 +63,18 @@ public class BananaRama implements Adapter<Object>{
     }
  
     private  Adapter getAdapterForClass(Class<?> clazz){
-        if(!clazz.isAnnotationPresent(Banana.class))    
+        
+        if(customAdapters.containsKey(clazz)) {
+            return getAdapter(customAdapters.get(clazz));
+        }
+        
+        if(!clazz.isAnnotationPresent(Banana.class))    {
+            if(clazz.getName().equals("com.google.cloud.datastore.Entity")) {
+                System.out.println("ASDASDSADSADA");
+            }
             throw new IllegalArgumentException(clazz.getName() + " is not annotated with " + Banana.class.getName());
+        }
+            
         
         // If type was annotated for buffering, we retrieve the IndexedCollectionAdapter
         if(clazz.isAnnotationPresent(BufferedOnIndexedCollection.class))

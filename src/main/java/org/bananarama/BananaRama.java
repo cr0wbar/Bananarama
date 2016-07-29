@@ -19,6 +19,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bananarama.annotation.Banana;
 import org.bananarama.annotation.BananaRamaAdapter;
@@ -41,6 +42,19 @@ public class BananaRama implements Adapter<Object>{
     
     private final StripedLock slock;
     private final Map<Class<?>, Adapter<?>> adapters;
+    private final Map<Class<?>, Class<? extends Adapter>> customAdapters = new ConcurrentHashMap<>();
+    
+    /**
+     * Map the specified {@link Adapter} for a given entity. 
+     * This method is usefull to allow final class from external libraries to be managed by BananaRama
+     * @param adapter
+     * @param forEntiy 
+     * @return this instance
+     */
+    public BananaRama registerAdapter(Class<? extends Adapter> adapter, Class forEntiy) {
+        customAdapters.put(forEntiy, adapter);
+        return this;
+    }
     
     public BananaRama(){
         this(32);
@@ -57,8 +71,14 @@ public class BananaRama implements Adapter<Object>{
     }
  
     private  Adapter getAdapterForClass(Class<?> clazz){
-        if(!clazz.isAnnotationPresent(Banana.class))    
+        
+        if(customAdapters.containsKey(clazz)) {
+            return getAdapter(customAdapters.get(clazz));
+        }
+        
+        if(!clazz.isAnnotationPresent(Banana.class)) {
             throw new IllegalArgumentException(clazz.getName() + " is not annotated with " + Banana.class.getName());
+        }           
         
         // If type was annotated for buffering, we retrieve the IndexedCollectionAdapter
         if(clazz.isAnnotationPresent(BufferedOnIndexedCollection.class))

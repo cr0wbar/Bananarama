@@ -39,7 +39,7 @@ public class ListAdapter implements Adapter<Object>{
     public <T> CreateOperation<T> create(Class<T> clazz) {
        return new CreateOperation<T>() {
            @Override
-           public CreateOperation<T> from(Stream<T> data) {
+           public CreateOperation<T> from(Stream<T> data) {               
                data.forEach(backend::add);
                return this;
            }

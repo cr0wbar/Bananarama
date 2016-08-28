@@ -81,7 +81,7 @@ public class ListAdapter implements Adapter<Object>{
 
            @Override
            public Stream<T> fromKeys(List<?> keys) {
-               throw new UnsupportedOperationException("Not supported yet.");
+               return (Stream<T>)backend.stream().filter( e -> keys.contains(e));
            }
 
            @Override

@@ -15,11 +15,17 @@
  */
 package basic;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import org.bananarama.BananaRama;
 import org.bananarama.crud.CreateOperation;
 import org.bananarama.crud.DeleteOperation;
 import org.bananarama.crud.ReadOperation;
 import java.util.stream.Stream;
+import org.bananarama.io.DataCollector;
+import static org.bananarama.io.IOUtils.*;
+import org.bananarama.io.ListDataCollector;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -63,5 +69,25 @@ public class SimpleCrudTest {
         delete.from(Stream.of(entryUpdated));
         assertEquals(0, read.all().count());
         
+    }
+    
+    @Test
+    public void testDataCollectorsApi(){
+        final Entry entry = new Entry("John", "Doe");
+        final List<Entry> output = new ArrayList<>();
+        final DataCollector<Entry> collector = new ListDataCollector<>();
+        
+        bananarama.create(Entry.class).from(Stream.of(entry));
+        
+        bananarama.read(Entry.class)
+                .all(andSaveInList(output))
+                .fromKeys(collector, Collections.singletonList(entry))
+                .andReturn();
+        
+        assertEquals("Output Collector Size is wrong", output.size(),1);
+        assertEquals("Entry in collector does not match input", output.get(0),entry);
+        
+        assertEquals("Output Collector Size is wrong",collector.dump().count(), 1);
+        assertEquals("Entry in collector does not match input", collector.dump().findFirst().get(),entry);
     }
 }

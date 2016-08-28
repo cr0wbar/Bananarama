@@ -18,6 +18,7 @@ package org.bananarama.crud;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import java.util.List;
 import java.util.stream.Stream;
+import org.bananarama.io.DataCollector;
 
 /**
  *
@@ -30,16 +31,37 @@ public interface ReadOperation<T> extends BasicOperation{
      * layer in the form of a collection
      * @return this
      */
-    public Stream<T> all();
+    Stream<T> all();
+    
+    /**
+     * Reads all data and saves it in a {@link DataCollector}
+     * @param collector
+     * @return the {@link ReadOperation}
+     */
+    default ReadOperation<T> all(DataCollector<T> collector){
+        collector.collect(all());
+        return this;
+    }
     
     /**
      * Return all the data contained in the persisted
      * layer in the form of a collection, passing the given 
      * options to the underlying layer.
      * If no data has been found return an empty stream
-     * @return this
+     * @return the {@link Stream} of data
      */
-    public Stream<T> all(QueryOptions options);
+    Stream<T> all(QueryOptions options);
+    
+    /**
+     * Reads all data and saves it in a {@link DataCollector}
+     * @param collector
+     * @param options
+     * @return the {@link ReadOperation}
+     */
+    default ReadOperation<T> all(DataCollector<T> collector, QueryOptions options){
+        collector.collect(all(options));
+        return this;
+    }
     
     /**
      * Return all the data contained in the persisted
@@ -47,31 +69,79 @@ public interface ReadOperation<T> extends BasicOperation{
      * If no data has been found return an empty stream.
      * @param <Q> the query tupe
      * @param whereClause the query object
-     * @return this
+     * @return the {@link Stream} of data
      */
-    public <Q> Stream<T> where(Q whereClause);
+    <Q> Stream<T> where(Q whereClause);
+    
+    /**
+     * Reads all data that match the whereclause and saves it in a {@link DataCollector}
+     * @param <Q>
+     * @param collector
+     * @return the {@link ReadOperation}
+     */
+    default <Q> ReadOperation<T> where(DataCollector<T> collector, Q whereClause){
+        collector.collect(where(whereClause));
+        return this;
+    }
     
     /**
      * 
      * @param <Q>
      * @param whereClause
      * @param options
-     * @return 
+     * @return the {@link Stream} of data
      */
-    public <Q> Stream<T> where(Q whereClause,QueryOptions options);
+    <Q> Stream<T> where(Q whereClause,QueryOptions options);
+    
+    /**
+     * Reads all data that match the where Clause and saves it in a {@link DataCollector}
+     * @param <Q>
+     * @param collector
+     * @param options
+     * @return the {@link ReadOperation}
+     */
+    default <Q> ReadOperation<T> where(DataCollector<T> collector, Q whereClause, QueryOptions options){
+        collector.collect(where(whereClause,options));
+        return this;
+    }
     
     /**
      * 
      * @param keys
-     * @return 
+     * @return the {@link Stream} of data
      */
-    public Stream<T> fromKeys(List<?> keys);
+    Stream<T> fromKeys(List<?> keys);
+    
+    /**
+     * Reads all data that match the given keys and saves them in a {@link DataCollector}
+     * @param <Q>
+     * @param collector
+     * @param keys
+     * @return the {@link ReadOperation}
+     */
+    default <Q> ReadOperation<T> fromKeys(DataCollector<T> collector, List<?> keys){
+        collector.collect(fromKeys(keys));
+        return this;
+    }
     
     /**
      * 
      * @param keys
      * @param options
-     * @return 
+     * @return the {@link Stream} of data
      */
-    public Stream<T> fromKeys(List<?> keys,QueryOptions options);
+    Stream<T> fromKeys(List<?> keys,QueryOptions options);
+    
+    /**
+     * Reads all data that match the given keys and saves them in a {@link DataCollector}
+     * @param <Q>
+     * @param collector
+     * @param keys
+     * @param options
+     * @return the {@link ReadOperation}
+     */
+    default <Q> ReadOperation<T> fromKeys(DataCollector<T> collector, List<?> keys,QueryOptions options){
+        collector.collect(fromKeys(keys));
+        return this;
+    }
 }

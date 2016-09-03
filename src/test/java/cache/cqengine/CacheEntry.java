@@ -21,6 +21,7 @@ import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import org.bananarama.annotation.Banana;
+import org.bananarama.cache.IndexedCollectionAdapter;
 import org.bananarama.cache.annotation.BufferedOnIndexedCollection;
 import org.bananarama.cache.annotation.Indexed;
 import org.bananarama.cache.providers.index.NavigableIndexProvider;
@@ -28,8 +29,8 @@ import org.bananarama.cache.providers.index.NavigableIndexProvider;
 /**
  * @author Guglielmo De Concini
  */
-@BufferedOnIndexedCollection
-@Banana(adapter = ListAdapter.class)
+@BufferedOnIndexedCollection(backingAdapter = ListAdapter.class)
+@Banana(adapter = IndexedCollectionAdapter.class)
 public class CacheEntry extends Entry{
     
     public CacheEntry(String key, String val) {

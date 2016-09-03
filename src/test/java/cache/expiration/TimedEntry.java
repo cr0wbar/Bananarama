@@ -16,6 +16,7 @@
 package cache.expiration;
 
 import org.bananarama.annotation.Banana;
+import org.bananarama.cache.IndexedCollectionAdapter;
 import org.bananarama.cache.annotation.BufferedOnIndexedCollection;
 import org.bananarama.crud.util.NoOpAdapter;
 
@@ -23,8 +24,8 @@ import org.bananarama.crud.util.NoOpAdapter;
  *
  * @author Guglielmo De Concini
  */
-@BufferedOnIndexedCollection(provider = ExpiringCollectionProvider.class)
-@Banana(adapter = NoOpAdapter.class)
+@BufferedOnIndexedCollection(backingAdapter = NoOpAdapter.class,provider = ExpiringCollectionProvider.class)
+@Banana(adapter = IndexedCollectionAdapter.class)
 public class TimedEntry {
     private final int  id;
     

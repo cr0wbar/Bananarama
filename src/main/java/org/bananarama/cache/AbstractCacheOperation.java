@@ -8,6 +8,7 @@ package org.bananarama.cache;
 import com.googlecode.cqengine.IndexedCollection;
 import org.bananarama.BananaRama;
 import org.bananarama.annotation.Banana;
+import org.bananarama.cache.annotation.BufferedOnIndexedCollection;
 import org.bananarama.crud.Adapter;
 
 /**
@@ -31,9 +32,10 @@ public class AbstractCacheOperation<T> {
     protected  static <T> Adapter<? super T> getBackingAdapter(Class<T> clazz,BananaRama root){
         //Class must be annotated, it must have been
         //checked before, otherwise it's a bug
-        Adapter<?> backingAdapter;
+        final BufferedOnIndexedCollection anno = clazz.getAnnotation(BufferedOnIndexedCollection.class);
+        final Adapter<?> backingAdapter = root.using(anno.backingAdapter());
         
-        if( (  backingAdapter= root.using(clazz.getAnnotation(Banana.class).adapter())) == null)
+        if(  backingAdapter == null)
             throw new NullPointerException("The backing adapter for class " + clazz.getName() + " cannot be found. This should never happen");
         
         return (Adapter<? super T>)backingAdapter;

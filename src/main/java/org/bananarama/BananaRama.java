@@ -60,10 +60,6 @@ public class BananaRama implements Adapter<Object>{
         if(!clazz.isAnnotationPresent(Banana.class))    
             throw new IllegalArgumentException(clazz.getName() + " is not annotated with " + Banana.class.getName());
         
-        // If type was annotated for buffering, we retrieve the IndexedCollectionAdapter
-        if(clazz.isAnnotationPresent(BufferedOnIndexedCollection.class))
-            return getAdapter(IndexedCollectionAdapter.class);
-        
         Banana banana = clazz.getAnnotation(Banana.class);
         
         return getAdapter(banana.adapter());

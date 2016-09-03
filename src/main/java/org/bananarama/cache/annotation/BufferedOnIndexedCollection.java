@@ -22,6 +22,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.bananarama.crud.Adapter;
 
 /**
  * If present, indicates that the annotated
@@ -45,5 +46,7 @@ public @interface BufferedOnIndexedCollection {
      * it will focus only on the given class instead.
      * Fields in child classes override the ones in parent classes.
      */
-    boolean inheritFields() default false;    
+    boolean inheritFields() default false; 
+    
+    Class<? extends Adapter<?>> backingAdapter();
 }

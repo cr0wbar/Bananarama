@@ -19,6 +19,7 @@ import com.googlecode.cqengine.attribute.Attribute;
 import com.googlecode.cqengine.attribute.SimpleAttribute;
 import com.googlecode.cqengine.query.option.QueryOptions;
 import org.bananarama.annotation.Banana;
+import org.bananarama.cache.IndexedCollectionAdapter;
 import org.bananarama.cache.annotation.BufferedOnIndexedCollection;
 import org.bananarama.cache.annotation.Indexed;
 import org.bananarama.cache.providers.index.NavigableIndexProvider;
@@ -28,8 +29,8 @@ import org.bananarama.crud.util.NoOpAdapter;
  *
  * @author Guglielmo De Concini
  */
-@BufferedOnIndexedCollection(inheritFields = true)
-@Banana(adapter = NoOpAdapter.class)
+@BufferedOnIndexedCollection(backingAdapter = NoOpAdapter.class,inheritFields = true)
+@Banana(adapter = IndexedCollectionAdapter.class)
 public class CacheInheritedEntry extends CacheParentEntry{
     private String name;
 

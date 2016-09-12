@@ -190,6 +190,7 @@ public abstract class WeldingAdapter<S> implements Adapter<S>{
             public void close() throws IOException {
                 throw new UnsupportedOperationException("Not supported yet.");
             }
+			
             @Override
             public DeleteOperation<T> all() {
 
@@ -197,7 +198,6 @@ public abstract class WeldingAdapter<S> implements Adapter<S>{
                 .forEach(adapter -> adapter.delete(clazz).all());
                 
                 return this;
-                
             }
         };
     }

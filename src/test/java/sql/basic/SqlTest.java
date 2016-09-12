@@ -143,15 +143,17 @@ public class SqlTest {
         //Check that records were deleted
         Assert.assertEquals(0,reader.all().count());
         
+		// Now check the delete all functionality
         creator.from(created.stream());
-        
+        Assert.assertTrue(reader.all().count() > 0);
+		
         deleter.all();      
         
         //Check that records were deleted
         Assert.assertEquals(0,reader.all().count());
         
     }
-    
+	
     private void testBatchMultiId(int n){
         List<MultipleIdColPojo> created = IntStream.range(0,n)
                 .mapToObj(MultipleIdColPojo::newInstance)

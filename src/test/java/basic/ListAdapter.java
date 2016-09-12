@@ -153,6 +153,15 @@ public class ListAdapter implements Adapter<Object>{
            public void close() throws IOException {
                
            }
+           
+
+            @Override
+            public DeleteOperation<T> all() {
+    
+                backend.clear();
+                return this;
+                
+            }
        };
     }
     

@@ -69,6 +69,14 @@ public class SimpleCrudTest {
         delete.from(Stream.of(entryUpdated));
         assertEquals(0, read.all().count());
         
+     
+        
+        create.from(Stream.of(entry));
+        
+        assertEquals(1, read.all().count());
+
+        delete.all();
+        assertEquals(0, read.all().count());
     }
     
     @Test

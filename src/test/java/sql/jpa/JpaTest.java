@@ -86,6 +86,14 @@ public class JpaTest {
         delete.from(Stream.of(updated));
         
         checkCount(0, read);
+        
+        
+        create.from(Stream.of(simp));
+        checkCount(1, read);
+        delete.all();
+        checkCount(0, read);
+        
+        
     }
     
     @Test 

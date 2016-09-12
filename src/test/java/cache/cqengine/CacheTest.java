@@ -105,6 +105,15 @@ public class CacheTest {
         bananarama.delete(CacheEntry.class).where(equal(CacheEntry.KEY,entryUpdated.getKey()));
         checkCount(0, read);
         
+        create.from(Stream.of(entry));
+        
+        checkCount(1, read);
+
+        bananarama.delete(CacheEntry.class).all();
+        checkCount(0, read);
+
+        
+        
         //Check indexes creation
         try{
             IndexedCollectionAdapter adap = bananarama.using(IndexedCollectionAdapter.class);

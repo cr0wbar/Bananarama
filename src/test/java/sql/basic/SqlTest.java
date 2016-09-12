@@ -143,6 +143,13 @@ public class SqlTest {
         //Check that records were deleted
         Assert.assertEquals(0,reader.all().count());
         
+        creator.from(created.stream());
+        
+        deleter.all();      
+        
+        //Check that records were deleted
+        Assert.assertEquals(0,reader.all().count());
+        
     }
     
     private void testBatchMultiId(int n){

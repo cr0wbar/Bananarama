@@ -109,4 +109,15 @@ public class CacheDeleteOperation<T> extends AbstractCacheOperation<T> implement
     public void close() throws IOException {
         
     }
+    
+    /**
+    * {@inheritDoc}
+    */
+    @Override
+    public DeleteOperation<T> all() {
+
+        getBackingAdapter(clazz).delete(clazz).all();
+        coll.clear();
+        return this;
+    }
 }

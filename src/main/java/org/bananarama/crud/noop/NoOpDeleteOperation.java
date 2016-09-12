@@ -53,4 +53,14 @@ public class NoOpDeleteOperation<T> implements DeleteOperation<T>{
         */
     }
     
+    /**
+    * {@inheritDoc}
+    */
+    @Override
+    public DeleteOperation<T> all() {
+
+        return this;
+        
+    }
+    
 }

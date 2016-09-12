@@ -80,4 +80,20 @@ public class JpaDeleteOperation<T> extends AbstractJpaOperation<T> implements De
         return from(data);
     }
     
+    /**
+    * {@inheritDoc}
+    */
+    @Override
+    public DeleteOperation<T> all() {
+
+        final EntityManager em = factory.createEntityManager();
+        em.getTransaction().begin();
+        em.createQuery(DELETE).executeUpdate();
+        em.getTransaction().commit();
+        
+        close(em);
+        
+        return this;
+    }
+    
 }

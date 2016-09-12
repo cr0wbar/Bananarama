@@ -106,5 +106,14 @@ public class TestMagic {
         magic.delete(SimpleObj.class).from(objs.stream());
         
         assertEquals("Magic Delete did now work",0,listAd.read(SimpleObj.class).all().count());
+        
+        
+        magic.create(SimpleObj.class).from(objs.stream()).andReturn();
+
+        magic.delete(SimpleObj.class).all();
+        
+        assertEquals("Magic Delete did now work",0,listAd.read(SimpleObj.class).all().count());
+
+        
     }
 }

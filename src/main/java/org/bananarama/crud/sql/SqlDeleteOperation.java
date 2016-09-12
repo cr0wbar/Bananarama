@@ -69,11 +69,13 @@ public class SqlDeleteOperation<T> extends AbstractSqlOperation<T> implements De
     public <Q> SqlDeleteOperation<T> where(Q whereClause, QueryOptions options) {
         String currentTableName = getTableNameForCurrentSession(options);
         
-        String whereClauseString = null;
-        if(whereClause instanceof String)
-            whereClauseString = (String) whereClause;
-        else if(whereClause instanceof com.googlecode.cqengine.query.Query)
-            whereClauseString = CQE2SQL.convertCqQuery((com.googlecode.cqengine.query.Query<?>) whereClause);
+        String whereClauseString = "";
+        if (whereClause != null) {
+            if(whereClause instanceof String)
+                whereClauseString = (String) whereClause;
+            else if(whereClause instanceof com.googlecode.cqengine.query.Query)
+                whereClauseString = CQE2SQL.convertCqQuery((com.googlecode.cqengine.query.Query<?>) whereClause);            
+        }
         
         String sql = "DELETE from " + currentTableName + whereClauseString;
         
@@ -125,6 +127,17 @@ public class SqlDeleteOperation<T> extends AbstractSqlOperation<T> implements De
                         .filter(FieldAccessor::isKey)
                         .map(FieldAccessor::getName),""," = ? AND "," = ?")
         );
+    }
+
+    
+    /**
+    * {@inheritDoc}
+    */
+    @Override
+    public DeleteOperation<T> all() {
+
+        return where(null);
+        
     }
 
 }

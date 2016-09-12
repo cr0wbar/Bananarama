@@ -53,4 +53,11 @@ public interface DeleteOperation <T> extends BasicOperation{
      * @return
      */
     public DeleteOperation<T> from(Stream<T> data,QueryOptions options);
+    
+    /**
+     * Delete all records from the persisted layer.
+     * @param data The collection of objects to be removed
+     * @return
+     */
+    public DeleteOperation<T> all();
 }

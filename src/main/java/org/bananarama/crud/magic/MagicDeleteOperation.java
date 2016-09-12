@@ -65,5 +65,15 @@ public class MagicDeleteOperation<O,D,M extends ObjToDto<O,D>> implements Delete
     public void close() throws IOException {
         deleteDto.close();
     }
+    /**
+    * {@inheritDoc}
+    */
+    @Override
+    public DeleteOperation<O> all() {
+
+        deleteDto.all();
+        return this;
+        
+    }
     
 }

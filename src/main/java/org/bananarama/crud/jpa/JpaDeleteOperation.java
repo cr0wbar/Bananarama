@@ -33,7 +33,7 @@ public class JpaDeleteOperation<T> extends AbstractJpaOperation<T> implements De
     
     public JpaDeleteOperation(EntityManagerFactory factory,Class<T> clazz){
         super(factory,clazz);
-        DELETE = "DELETE from " + clazz.getSimpleName();
+        DELETE = "DELETE from " + getEntityName(clazz);
     }
     
     @Override

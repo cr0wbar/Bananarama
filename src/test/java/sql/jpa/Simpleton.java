@@ -35,7 +35,7 @@ import javax.persistence.ManyToMany;
  * 
  * @author Guglielmo De Concini
  */
-@Entity
+@Entity(name = "simple")
 @Banana(adapter = H2Adapter.class)
 public class Simpleton {
     private String description;

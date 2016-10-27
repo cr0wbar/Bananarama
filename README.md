@@ -312,17 +312,3 @@ public class SimpleObj {
 ```   
 
 The `@MapWith` annotation  tells the `MagicAdapter` that this object doesn't actually exists in the persistency layer, but it is an abstraction of its DTO counterpart. As a value accepts a class which implements the `ObjToDto<O,D>` interface. This class is then instantiated and used by the `MagicAdapter` to convert objects in DTOs and viceversa, and also to retrieve the DTO class in order to access the persistency layer. As such, this annotation **is a requirement** when using the `MagicAdapter`. A library which provides a very powerful set of tools when dealing with the DTO pattern is [MapStruct](http://mapstruct.org/).
-
-### JPA
-Implement a custom adapter in order to access a specific persistency unit.
-```java
-public class MyJpaAdapter extends AbstractJpaAdapter{
-    
-    public MyJpaAdapter() {
-        super("my_awesome_unit");//must match a persistency unit name in persistence.xml
-    }
-
-}
-```
-Then simply annotate with `@Banana( adapter = MyJpaAdapter.class)` any class annotated with `@Entity` and other annotations which are part of JPA and use it with BananaRama.
-

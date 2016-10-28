@@ -6,9 +6,9 @@
     <artifactId>bananarama-core</artifactId>
     
     <parent>    
-        <groupId>org.bananarama</groupId>
+        <groupId>com.github.cr0wbar.bananarama</groupId>
         <artifactId>bananarama</artifactId>
-        <version>0.9.0-SNAPSHOT</version>
+        <version>0.9.0</version>
     </parent>
 
     <dependencies>

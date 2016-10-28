@@ -17,10 +17,6 @@ package org.bananarama.io;
 
 import java.util.stream.Stream;
 
-/**
- *
- * @author gdc
- */
 public interface DataCollector<T> {
     
     /**

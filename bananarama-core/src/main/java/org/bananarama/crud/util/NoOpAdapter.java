@@ -16,10 +16,6 @@
 package org.bananarama.crud.util;
 
 import org.bananarama.crud.Adapter;
-import org.bananarama.crud.CreateOperation;
-import org.bananarama.crud.DeleteOperation;
-import org.bananarama.crud.ReadOperation;
-import org.bananarama.crud.UpdateOperation;
 import org.bananarama.crud.noop.NoOpCreateOperation;
 import org.bananarama.crud.noop.NoOpDeleteOperation;
 import org.bananarama.crud.noop.NoOpReadOperation;
